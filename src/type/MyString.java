@@ -1,6 +1,6 @@
 package type;
 
-import DSL_Model.Read;
+import DSLModel.Read;
 
 public class MyString implements Type
 {

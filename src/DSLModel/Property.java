@@ -1,4 +1,4 @@
-package DSL_Model;
+package DSLModel;
 
 public class Property
 {

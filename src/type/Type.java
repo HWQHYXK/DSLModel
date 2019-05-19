@@ -4,7 +4,7 @@ package type;
 public interface Type
 {
     //通过 Read 更新属性
-    void updateFromRead(DSL_Model.Read read);
+    void updateFromRead(DSLModel.Read read);
 
     //返回一段创建并初始化 Type 对象的代码
     String getInitializeString(String name);

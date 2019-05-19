@@ -1,4 +1,4 @@
-package DSL_Model;
+package DSLModel;
 
 import java.util.Scanner;
 

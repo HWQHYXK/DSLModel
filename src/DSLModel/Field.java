@@ -1,4 +1,4 @@
-package DSL_Model;
+package DSLModel;
 
 import type.CommonType;
 import type.MyString;
