@@ -6,19 +6,19 @@ public class Property
 
     public Property()
     {
-        name=new String();
-        content=new String();
+        name = new String();
+        content = new String();
     }
 
     public Property(String name,String content)
     {
-        this.name=name;
-        this.content=content;
+        this.name = name;
+        this.content = content;
     }
 
     //返回一段创建并初始化该 property 的代码
     public String getInitializeString(String name)
     {
-        return "String "+name+" = new String(\""+content+"\");";
+        return "String " + name + " = new String(\"" + content + "\");";
     }
 }

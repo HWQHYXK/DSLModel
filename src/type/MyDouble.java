@@ -4,7 +4,6 @@ import DSLModel.Read;
 
 public class MyDouble implements Type
 {
-    //因为 MyDouble 本身为 Double 的扩展，所以为了方便直接将 val 这一属性开放为 public ，供使用方便
     private double val;
 
     //FieldConstraint
@@ -13,38 +12,57 @@ public class MyDouble implements Type
     //构造
     public MyDouble()
     {
-        Length=2;
-        Precision=8;
+        Length = 2;
+        Precision = 8;
     }
     public MyDouble(double val,int length, int precision)
     {
-        this.val=val;
+        this.val = val;
         Length = length;
         Precision = precision;
     }
 
-    //改变 FieldConstraint
-    public void setLength(int length)
+    public double getVal()
     {
-        Length = length;
+        return val;
     }
-    public void setPrecision(int precision)
+    public void setVal(double val)
     {
-        Precision = precision;
+        this.val = val;
     }
 
     @Override
     public void updateFromRead(Read read)
     {
+        String s = new String();
+        while(true)
+        {
+            read.toNextLeft();
+            s = read.toNextRight();
+            if(s.charAt(0) == '/') break;
 
+            String s2 = read.toNextLeft();
+            read.toNextRight();
+            switch(s)
+            {
+                case "Length":
+                    Length = Integer.parseInt(s2);
+                    break;
+                case "Precision":
+                    Precision = Integer.parseInt(s2);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     @Override
     public String getInitializeString(String name)
     {
-        String ret="(";
-        ret+=Length+",";
-        ret+=Precision+")";
-        return "MyDouble "+name+" = new MyDouble"+ret+";";
+        String ret = "(";
+        ret += Length + ",";
+        ret += Precision + ")";
+        return "MyDouble " + name + " = new MyDouble" + ret + ";";
     }
 }

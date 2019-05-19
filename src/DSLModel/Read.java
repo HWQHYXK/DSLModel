@@ -9,8 +9,8 @@ public class Read
     //构造
     public Read()
     {
-        p=0;
-        content=new String();
+        p = 0;
+        content = new String();
     }
     public Read(String content)
     {
@@ -21,7 +21,7 @@ public class Read
     //将位置 p 移动到下一个"<" 并返回移动中经过字符的字符串（不包括首尾的尖括号）
     public String toNextLeft()
     {
-        int x=p;
+        int x = p;
         for(; content.charAt(p) != '<'; ++p)
             if(p >= content.length()) break;
         String ret= content.substring(x,p);
@@ -33,12 +33,12 @@ public class Read
     //将位置 p 移动到下一个">" 并返回移动中经过字符的字符串（不包括首尾的尖括号）
     public String toNextRight()
     {
-        int x=p;
+        int x = p;
         for(; content.charAt(p) != '>'; ++p)
             if(p >= content.length()) break;
-        String ret= content.substring(x,p);
+        String ret = content.substring(x,p);
         if(ret.charAt(0) == '<' || ret.charAt(0) == '>')
-            ret=ret.substring(1);
+            ret = ret.substring(1);
         return ret;
     }
 

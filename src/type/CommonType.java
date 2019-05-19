@@ -20,6 +20,6 @@ public class CommonType implements Type
     @Override
     public String getInitializeString(String name)
     {
-        return type+" "+name+";";
+        return type + " " + name + ";";
     }
 }

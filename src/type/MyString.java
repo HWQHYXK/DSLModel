@@ -4,17 +4,16 @@ import DSLModel.Read;
 
 public class MyString implements Type
 {
-    //因为 MyString 本身为 String 的扩展，所以为了方便直接将 description 这一属性开放为 public ，供使用方便
     private String value;
     //FieldConstraint
     private int MaxLength,MinLength;
-    private boolean isEmpty;
+    private boolean IsEmpty;
 
     //构造
     public MyString()
     {
-        MinLength=0;
-        MaxLength=100000;
+        MinLength = 0;
+        MaxLength = 100000;
     }
     public MyString(int maxLength, int minLength)
     {
@@ -46,15 +45,38 @@ public class MyString implements Type
     @Override
     public void updateFromRead(Read read)
     {
+        String s = new String();
+        while(true)
+        {
+            read.toNextLeft();
+            s = read.toNextRight();
+            if(s.charAt(0) == '/') break;
 
+            String s2 = read.toNextLeft();
+            read.toNextRight();
+            switch(s)
+            {
+                case "MaxLength":
+                    MaxLength = Integer.parseInt(s2);
+                    break;
+                case "MinLength":
+                    MinLength = Integer.parseInt(s2);
+                    break;
+                case "IsEmpty":
+                    IsEmpty = Boolean.parseBoolean(s2);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     @Override
     public String getInitializeString(String name)
     {
-        String ret="(";
-        ret+=MaxLength+",";
-        ret+=MinLength+")";
-        return "MyDouble "+name+" = new MyDouble"+ret+";";
+        String ret = "(";
+        ret += MaxLength+",";
+        ret += MinLength+")";
+        return "MyDouble " + name + " = new MyDouble" + ret + ";";
     }
 }

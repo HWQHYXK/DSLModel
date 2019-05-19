@@ -10,7 +10,7 @@ public class Entity
     //读入信息 构造对象
     public Entity(Read read)
     {
-        String s=new String();
+        String s = new String();
         while(true)
         {
             read.toNextLeft();
@@ -33,7 +33,7 @@ public class Entity
             else
             {
                 //更新普通的属性 property
-                String s2=read.toNextLeft();
+                String s2 = read.toNextLeft();
                 read.toNextRight();
                 property.add(new Property(s,s2));
             }
