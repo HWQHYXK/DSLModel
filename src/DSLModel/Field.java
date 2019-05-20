@@ -4,41 +4,51 @@ import type.CommonType;
 import type.MyDouble;
 import type.MyString;
 
+import org.w3c.dom.*;
 import java.util.ArrayList;
 
 public class Field
 {
-    ArrayList<Property> property;
+    ArrayList<Property> property =new ArrayList<>();
     type.Type type;
 
-    //读入信息 构造对象
-    public Field(Read read)
+    //通过 DOM 构造对象
+    public Field(Element root)
     {
-        String s = new String();
-        while(true)
+        NodeList nodes = root.getChildNodes();
+        //先确定 type
+        for(int i = 0;i < nodes.getLength();i++)
         {
-            read.toNextLeft();
-            s = read.toNextRight();
-            if (s.charAt(0) == '/') break;
+            Node child = nodes.item(i);
+            if (!(child instanceof Element)) continue;
 
-            if(s.equals("FieldType"))
+            Element x = (Element) child;
+            if(x.getNodeName().equals("FieldType"))
             {
-                //创建对应类型的 Type 对象
-                String s2 = read.toNextLeft();
-                read.toNextRight();
-                type = getTypeObject(s2);
+                String content = x.getFirstChild().getNodeValue();
+                type = getTypeObject(content);
             }
-            else if(s.equals("FieldConstraint"))
+        }
+        //再更新其他属性
+        for(int i = 0;i < nodes.getLength();i++)
+        {
+            Node child0 = nodes.item(i);
+            if (!(child0 instanceof Element)) continue;
+
+            Element x = (Element) child0;
+            if(x.getNodeName().equals("FieldType")) continue;//type 已经更新过了
+
+            if(x.getNodeName().equals("FieldConstraint"))
             {
-                //递归调用对应 Type 对象的构造方法
-                type.updateFromRead(read);
+                //递归调用对应 Type 对象的方法
+                type.updateFromRead(x);
             }
             else
             {
                 //更新普通的属性 property
-                String s2=read.toNextLeft();
-                read.toNextRight();
-                property.add(new Property(s,s2));
+                String name = x.getNodeName();
+                String content = x.getFirstChild().getNodeValue();
+                property.add(new Property(name,content));
             }
         }
     }

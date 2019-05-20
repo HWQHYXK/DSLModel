@@ -1,26 +1,34 @@
 package DSLModel;
 
-import java.util.Scanner;
+import org.w3c.dom.*;
+import java.io.IOException;
+import org.xml.sax.SAXException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
-
-        //把输入内容记入 read 中，便于适应各种形式的输入
-        String s = new String();
-        while(scan.hasNext())
-            s += scan.next();
-        Read read = new Read();
-
-        while(read.end())
+        try
         {
-            read.toNextLeft();
-            s = read.toNextRight();
-            if(s.equals("Entity"))
-            {
-                Entity entity=new Entity(read);
-                break;
-            }
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document document = dBuilder.parse("in/order.xml");
+
+            Element root = document.getDocumentElement();
+            Entity entity = new Entity(root);
+        }
+        catch (ParserConfigurationException e)
+        {
+
+        }
+        catch (SAXException e)
+        {
+
+        }
+        catch (IOException e)
+        {
+
         }
 
         return ;

@@ -1,6 +1,6 @@
 package type;
 
-import DSLModel.Read;
+import org.w3c.dom.Element;
 
 public class MyString implements Type
 {
@@ -43,32 +43,9 @@ public class MyString implements Type
     }
 
     @Override
-    public void updateFromRead(Read read)
+    public void updateFromRead(Element root)
     {
-        String s = new String();
-        while(true)
-        {
-            read.toNextLeft();
-            s = read.toNextRight();
-            if(s.charAt(0) == '/') break;
 
-            String s2 = read.toNextLeft();
-            read.toNextRight();
-            switch(s)
-            {
-                case "MaxLength":
-                    MaxLength = Integer.parseInt(s2);
-                    break;
-                case "MinLength":
-                    MinLength = Integer.parseInt(s2);
-                    break;
-                case "IsEmpty":
-                    IsEmpty = Boolean.parseBoolean(s2);
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 
     @Override
