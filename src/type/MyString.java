@@ -1,14 +1,11 @@
 package type;
 
-import org.w3c.dom.Element;
-
-public class MyString implements Type
+public class MyString
 {
     private String value;
     //FieldConstraint
     private int MaxLength,MinLength;
     private boolean IsEmpty;
-
     //构造
     public MyString()
     {
@@ -36,24 +33,8 @@ public class MyString implements Type
 
     public void setValue(String value)
     {
-        if(judge())
-            this.value = value;
-        else
+        this.value = value;
+        if(!judge())
             throw new RuntimeException();
-    }
-
-    @Override
-    public void updateFromRead(Element root)
-    {
-
-    }
-
-    @Override
-    public String getInitializeString(String name)
-    {
-        String ret = "(";
-        ret += MaxLength+",";
-        ret += MinLength+")";
-        return "MyDouble " + name + " = new MyDouble" + ret + ";";
     }
 }

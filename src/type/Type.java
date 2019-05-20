@@ -1,3 +1,5 @@
+//暂时废弃 ！！！
+
 package type;
 
 import org.w3c.dom.Element;

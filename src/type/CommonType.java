@@ -1,14 +1,10 @@
+//暂时废弃 ！！！
+
 package type;
 
-import org.w3c.dom.Element;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-public class CommonType implements Type
+public class CommonType
 {
     private String type;
-    private ArrayList<String> enumlist;
 
     public CommonType(String type)
     {
@@ -18,12 +14,6 @@ public class CommonType implements Type
     public String getType()
     {
         return type;
-    }
-
-    @Override
-    public void updateFromRead(Element root)
-    {
-
     }
 
     /*
@@ -95,10 +85,4 @@ public class CommonType implements Type
         }
     }
     */
-
-    @Override
-    public String getInitializeString(String name)
-    {
-        return type + " " + name + ";";
-    }
 }

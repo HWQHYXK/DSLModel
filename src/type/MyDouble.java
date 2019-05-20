@@ -1,8 +1,6 @@
 package type;
 
-import org.w3c.dom.Element;
-
-public class MyDouble implements Type
+public class MyDouble
 {
     private double val;
 
@@ -29,20 +27,5 @@ public class MyDouble implements Type
     public void setVal(double val)
     {
         this.val = val;
-    }
-
-    @Override
-    public void updateFromRead(Element root)
-    {
-
-    }
-
-    @Override
-    public String getInitializeString(String name)
-    {
-        String ret = "(";
-        ret += Length + ",";
-        ret += Precision + ")";
-        return "MyDouble " + name + " = new MyDouble" + ret + ";";
     }
 }

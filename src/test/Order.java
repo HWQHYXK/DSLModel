@@ -4,13 +4,13 @@ import type.MyString;
 
 public class Order
 {
+    private String EntityName = "销售订单";
+    /*ID是内码*/
+    private MyString ID = new MyString(6, 6);
     public Order(String ID)
     {
         this.ID.setValue(ID);
     }
-    private String EntityName = "销售订单";
-    /*ID是内码*/
-    private MyString ID = new MyString(36, 36);
 
     public MyString getID()
     {
