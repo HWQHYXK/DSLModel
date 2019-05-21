@@ -1,5 +1,7 @@
 package DSLModel;
 
+import type.MyString;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystemException;
@@ -44,6 +46,9 @@ public class CodeGenerator
         analog.leftBrace();// {
         analog.newLine();// Enter
         analog.addIndent();// Tab
+        generateConstructor();
+        analog.newLine();// Enter
+
     }
 
     private void createDaoClass() throws CodeGenerateException
@@ -62,10 +67,18 @@ public class CodeGenerator
 
     private void generateConstructor() throws CodeGenerateException
     {
+        StringBuilder paras = new StringBuilder();// use StringBuilder to enhance efficiency
         for(Field field : model.fields)
         {
-
+            if(field.type instanceof MyString)
+                if(!((MyString)field.type).isEmpty())
+                {
+                    paras.append((((MyString) field.type).getValue())+ ", ");
+                }
         }
+        paras.delete(paras.length()-2, paras.length()-1);
+        System.out.println(paras);
+        analog.generateConstructor(model.properties.get("EntityCode"), paras.toString());
     }
 
     private void generateFields() throws CodeGenerateException
