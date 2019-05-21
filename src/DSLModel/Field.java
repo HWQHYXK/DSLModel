@@ -4,6 +4,6 @@ import java.util.ArrayList;
 
 public class Field
 {
-    ArrayList<Property> property =new ArrayList<>();
+    ArrayList<Property> properties =new ArrayList<>();
     Object type;
 }

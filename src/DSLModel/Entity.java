@@ -4,6 +4,6 @@ import java.util.ArrayList;
 
 public class Entity
 {
-    ArrayList<Property> property = new ArrayList<>();
+    ArrayList<Property> properties = new ArrayList<>();
     ArrayList<Field> fields = new ArrayList<>();
 }

@@ -69,10 +69,10 @@ public class XMLParser
             }
             else
             {
-                //更新普通的属性 property
+                //更新普通的属性 properties
                 String name = x.getNodeName();
                 String content = x.getFirstChild().getNodeValue();
-                entity.property.add(new Property(name,content));
+                entity.properties.add(new Property(name,content));
             }
         }
     }
@@ -110,10 +110,10 @@ public class XMLParser
             }
             else
             {
-                //更新普通的属性 property
+                //更新普通的属性 properties
                 String name = x.getNodeName();
                 String content = x.getFirstChild().getNodeValue();
-                field.property.add(new Property(name,content));
+                field.properties.add(new Property(name,content));
             }
         }
     }
