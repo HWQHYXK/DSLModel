@@ -15,6 +15,7 @@ public class Test
         AnalogInput analog = new AnalogInput(new File("hello.java"));
         analog.importClass(CommonType.class);
         analog.newLine();
+        analog.end();
     }
     enum hwq
     {

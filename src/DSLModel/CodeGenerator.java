@@ -13,6 +13,7 @@ public class CodeGenerator
     private Entity model;
     private Scanner scanner = new Scanner(System.in);
     private ArrayList<Class> classes = new ArrayList<>();
+    private AnalogInput analog;
 
     public CodeGenerator(File outputDir)
     {
@@ -32,7 +33,22 @@ public class CodeGenerator
         this.model = model;
     }
 
-    private void extractClasses()
+    private void createMainClass() throws CodeGenerateException
+    {
+        extractClasses();
+        analog.createClass(model.properties.get("EntityCode"));
+    }
+
+    private void extractClasses() throws CodeGenerateException
+    {
+        for(Field field : model.fields)
+        {
+            analog.importClass(field.type.getClass());
+            analog.newLine();
+        }
+    }
+
+    private void createClass(String className)
     {
 
     }
