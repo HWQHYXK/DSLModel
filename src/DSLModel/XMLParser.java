@@ -66,7 +66,7 @@ public class XMLParser
                     }
                     else throw new RuntimeException();
                 }
-            }
+            } 
             else
             {
                 //更新普通的属性 properties
@@ -80,6 +80,7 @@ public class XMLParser
     private static void updateField(Element root,Field field)
     {
         NodeList nodes = root.getChildNodes();
+
         //先确定 type
         for(int i = 0;i < nodes.getLength();i++)
         {
@@ -93,6 +94,7 @@ public class XMLParser
                 field.type = new type.TypeManager().createType(content);
             }
         }
+
         //再更新其他属性
         for(int i = 0;i < nodes.getLength();i++)
         {
@@ -104,7 +106,6 @@ public class XMLParser
 
             if(x.getNodeName().equals("FieldConstraint"))
             {
-                // TODO TODO TODO TODO TODO TODO
                 //递归处理 FieldConstraint
                 updateType(x,field.type);
             }
@@ -120,6 +121,44 @@ public class XMLParser
 
     private static void updateType(Element root,Object type)
     {
-        //TODO TODO TODO TODO TODO TODO
+        Class class0 = type.getClass();
+        NodeList nodes = root.getChildNodes();
+        if(type instanceof Integer)
+        {
+            //TODO TODO TODO TODO TODO TODO
+        }
+        else
+        {
+            for(int i = 0;i < nodes.getLength();i++)
+            {
+                Node child0 = nodes.item(i);
+                if (!(child0 instanceof Element)) continue;
+
+                Element x = (Element) child0;
+                String name = x.getNodeName();
+                String content = x.getFirstChild().getNodeValue();
+                try
+                {
+                    //通过反射机制 强行改变更新对应的属性
+                    java.lang.reflect.Field tt = class0.getDeclaredField(name);
+                    tt.setAccessible(true);
+                    if(tt.getType() == int.class)
+                        tt.setInt(type,Integer.parseInt(content));
+                    else if(tt.getType() == boolean.class)
+                        tt.setBoolean(type,Boolean.parseBoolean(content));
+                    else if(tt.getType() == double.class)
+                        tt.setDouble(type,Double.parseDouble(content));
+                    else tt.set(type,content);
+                }
+                catch (NoSuchFieldException e)
+                {
+
+                }
+                catch (IllegalAccessException e)
+                {
+
+                }
+            }
+        }
     }
 }
