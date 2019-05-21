@@ -1,7 +1,11 @@
 package type;
 
 
+import javafx.scene.shape.ClosePathBuilder;
+
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TypeManager
@@ -33,21 +37,38 @@ public class TypeManager
         try
         {
             System.out.println(s);
+
             Class class0 = typeHashMap.get(s);
-            /*
+            Class classes[] = new Class[parameter.length];
             for(int i = 0;i < parameter.length;i++)
+                classes[i] = parameter[i].getClass();
+
+            Constructor constructors[] = class0.getConstructors();
+            for(int i = 0;i < constructors.length;i++)
             {
-                parameter[i].getClass();
+                if(classes.length != constructors[i].getParameterCount()) continue;
+
+                boolean match = true;
+                Class[] parameterTypes = constructors[i].getParameterTypes();
+                for(int j = 0;match && j < parameterTypes.length;j++)
+                    match = (classes[j] != parameterTypes[j]);
+
+                if(match)
+                    return constructors[i].newInstance(parameter);
             }
-            Constructor constructor = class0.getConstructor();
-            */
-            return constructor.newInstance();
+
+            //throw new RuntimeException();
+            return null;
         }
         catch (IllegalAccessException e)
         {
 
         }
         catch (InstantiationException e)
+        {
+
+        }
+        catch (InvocationTargetException e)
         {
 
         }

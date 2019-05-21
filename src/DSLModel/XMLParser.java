@@ -3,7 +3,6 @@ package DSLModel;
 import org.w3c.dom.*;
 import java.io.IOException;
 import org.xml.sax.SAXException;
-import type.MyString;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -82,19 +81,19 @@ public class XMLParser
     {
         NodeList nodes = root.getChildNodes();
 
-        //先尝试创建一个对应的 type
-        String typeString = new String();
+        //先确定 type
         for(int i = 0;i < nodes.getLength();i++)
         {
             Node child = nodes.item(i);
             if (!(child instanceof Element)) continue;
+
             Element x = (Element) child;
             if(x.getNodeName().equals("FieldType"))
-                typeString = x.getFirstChild().getNodeValue();
+            {
+                String content = x.getFirstChild().getNodeValue();
+                field.type = new type.TypeManager().createType(content);
+            }
         }
-
-        Object type = new type.TypeManager().createType(typeString);
-
 
         //再更新其他属性
         for(int i = 0;i < nodes.getLength();i++)
@@ -107,9 +106,8 @@ public class XMLParser
 
             if(x.getNodeName().equals("FieldConstraint"))
             {
-                // TODO TODO TODO TODO TODO TODO
                 //递归处理 FieldConstraint
-                updateType(x,type);
+                updateType(x,field.type);
             }
             else
             {
@@ -123,9 +121,13 @@ public class XMLParser
 
     private static void updateType(Element root,Object type)
     {
-        //TODO TODO TODO TODO TODO TODO
+        Class class0 = type.getClass();
         NodeList nodes = root.getChildNodes();
-        if(type instanceof MyString)
+        if(type instanceof Integer)
+        {
+            //TODO TODO TODO TODO TODO TODO
+        }
+        else
         {
             for(int i = 0;i < nodes.getLength();i++)
             {
@@ -133,9 +135,28 @@ public class XMLParser
                 if (!(child0 instanceof Element)) continue;
 
                 Element x = (Element) child0;
-                switch (x.getNodeName())
+                String name = x.getNodeName();
+                String content = x.getFirstChild().getNodeValue();
+                try
                 {
-                    case "MaxLength": break;
+                    //通过反射机制 强行改变更新对应的属性
+                    java.lang.reflect.Field tt = class0.getDeclaredField(name);
+                    tt.setAccessible(true);
+                    if(tt.getType() == int.class)
+                        tt.setInt(type,Integer.parseInt(content));
+                    else if(tt.getType() == boolean.class)
+                        tt.setBoolean(type,Boolean.parseBoolean(content));
+                    else if(tt.getType() == double.class)
+                        tt.setDouble(type,Double.parseDouble(content));
+                    else tt.set(type,content);
+                }
+                catch (NoSuchFieldException e)
+                {
+
+                }
+                catch (IllegalAccessException e)
+                {
+
                 }
             }
         }
