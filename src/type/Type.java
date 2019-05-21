@@ -7,11 +7,7 @@ import org.w3c.dom.Element;
 //非基本类型的 字段类型 接口
 public interface Type
 {
-    //通过 DOM 更新属性
-    void updateFromRead(Element root);
-
-    //返回一段创建并初始化 Type 对象的代码
-    String getInitializeString(String name);
+    boolean isEmpty = true;
 }
 
 //接口 Type 中的方法为帮助构造实体类 Entity 所用

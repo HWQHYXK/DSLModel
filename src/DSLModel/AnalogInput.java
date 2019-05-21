@@ -26,11 +26,42 @@ public class AnalogInput
             throw new CodeGenerateException(lineNum);
         }
     }
+/*
+* EntityName:
+* EntityDescription
+* */
+    public void generateDescription(String name, String description) throws CodeGenerateException
+    {
+        try
+        {
+            writer.write("/*\r\n" +
+                    "* EntityName: "+ name + "\r\n" +
+                    "* EntityDescription: " + description + "\r\n" +
+                    "* */");
+            lineNum += 3;
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    public void generatePackage(String namespace) throws CodeGenerateException
+    {
+        try
+        {
+            indent();
+            writer.write("package " + namespace + ";");
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
 
     public void createClass(String className) throws CodeGenerateException
     {
         try
         {
+            indent();
             writer.write("public class " + className);
         }catch (IOException e)
         {

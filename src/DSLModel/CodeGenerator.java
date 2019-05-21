@@ -35,8 +35,20 @@ public class CodeGenerator
 
     private void createMainClass() throws CodeGenerateException
     {
-        extractClasses();
-        analog.createClass(model.properties.get("EntityCode"));
+        analog.generateDescription(model.properties.get("EntityName"), model.properties.get("EntityDescription"));//generate description according to EntityNameSpace;
+        analog.newLine();// Enter
+        analog.generatePackage(model.properties.get("EntityNameSpace"));//generate package according to EntityNameSpace;
+        analog.newLine();// Enter
+        extractClasses();//create import statements
+        analog.createClass(model.properties.get("EntityCode"));//generate class name according to EntityCode;
+        analog.leftBrace();// {
+        analog.newLine();// Enter
+        analog.addIndent();// Tab
+    }
+
+    private void createDaoClass() throws CodeGenerateException
+    {
+
     }
 
     private void extractClasses() throws CodeGenerateException
@@ -48,9 +60,20 @@ public class CodeGenerator
         }
     }
 
-    private void createClass(String className)
+    private void generateConstructor() throws CodeGenerateException
     {
+        for(Field field : model.fields)
+        {
 
+        }
+    }
+
+    private void generateFields() throws CodeGenerateException
+    {
+        for(Field field : model.fields)
+        {
+
+        }
     }
 
     private void createFiles(File file)
