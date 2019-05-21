@@ -66,7 +66,7 @@ public class XMLParser
                     }
                     else throw new RuntimeException();
                 }
-            }
+            } 
             else
             {
                 //更新普通的属性 properties
