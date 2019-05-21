@@ -12,6 +12,7 @@ public class MyString
         MinLength = 0;
         MaxLength = 100000;
     }
+
     public MyString(int maxLength, int minLength)
     {
         MaxLength = maxLength;
@@ -24,6 +25,11 @@ public class MyString
         if(value.length() > MaxLength) return false;
         if(value.length() < MinLength) return false;
         return true;
+    }
+
+    public boolean isEmpty()
+    {
+        return IsEmpty;
     }
 
     public String getValue()

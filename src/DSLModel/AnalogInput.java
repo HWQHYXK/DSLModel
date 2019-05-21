@@ -1,6 +1,7 @@
 package DSLModel;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class AnalogInput
 {
@@ -27,11 +28,55 @@ public class AnalogInput
         }
     }
 
+    public void generateDescription(String name, String description) throws CodeGenerateException
+    {
+        /*
+         * EntityName:
+         * EntityDescription:
+         * */
+        try
+        {
+            writer.write("/*\r\n" +
+                    "* EntityName: "+ name + "\r\n" +
+                    "* EntityDescription: " + description + "\r\n" +
+                    "* */");
+            lineNum += 3;
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    public void generatePackage(String namespace) throws CodeGenerateException
+    {
+        try
+        {
+            indent();
+            writer.write("package " + namespace + ";");
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
     public void createClass(String className) throws CodeGenerateException
     {
         try
         {
+            indent();
             writer.write("public class " + className);
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    public void generateConstructor(String name, String paras) throws CodeGenerateException //paras form goes like String a, String b
+    {
+        try
+        {
+            indent();
+            writer.write("public " + name + "(" + paras + ")");
         }catch (IOException e)
         {
             throw new CodeGenerateException(lineNum);
