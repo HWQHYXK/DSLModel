@@ -17,6 +17,7 @@ public class TypeManager
             Class Boolean = Class.forName("Boolean");
             Class Integer = Class.forName("Integer");
 
+
             typeHashMap.put("string", MyString);
             typeHashMap.put("double", MyDouble);
             typeHashMap.put("bool", Boolean);

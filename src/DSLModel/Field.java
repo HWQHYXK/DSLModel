@@ -1,9 +1,10 @@
 package DSLModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Field
 {
-    ArrayList<Property> property =new ArrayList<>();
+    HashMap<String, String> properties =new HashMap<>();
     Object type;
 }
