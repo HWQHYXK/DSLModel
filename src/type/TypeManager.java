@@ -1,6 +1,7 @@
 package type;
 
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
 public class TypeManager
@@ -26,12 +27,20 @@ public class TypeManager
 
         }
     }
-    public Object createType(String s)
+    public <T> Object createType(String s,T... parameter)
     {
         try
         {
             System.out.println(s);
-            return typeHashMap.get(s).newInstance();
+            Class class0 = typeHashMap.get(s);
+            /*
+            for(int i = 0;i < parameter.length;i++)
+            {
+                parameter[i].getClass();
+            }
+            Constructor constructor = class0.getConstructor();
+            */
+            return constructor.newInstance();
         }
         catch (IllegalAccessException e)
         {

@@ -3,6 +3,7 @@ package DSLModel;
 import org.w3c.dom.*;
 import java.io.IOException;
 import org.xml.sax.SAXException;
+import type.MyString;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -80,19 +81,21 @@ public class XMLParser
     private static void updateField(Element root,Field field)
     {
         NodeList nodes = root.getChildNodes();
-        //先确定 type
+
+        //先尝试创建一个对应的 type
+        String typeString = new String();
         for(int i = 0;i < nodes.getLength();i++)
         {
             Node child = nodes.item(i);
             if (!(child instanceof Element)) continue;
-
             Element x = (Element) child;
             if(x.getNodeName().equals("FieldType"))
-            {
-                String content = x.getFirstChild().getNodeValue();
-                field.type = new type.TypeManager().createType(content);
-            }
+                typeString = x.getFirstChild().getNodeValue();
         }
+
+        Object type = new type.TypeManager().createType(typeString);
+
+
         //再更新其他属性
         for(int i = 0;i < nodes.getLength();i++)
         {
@@ -106,7 +109,7 @@ public class XMLParser
             {
                 // TODO TODO TODO TODO TODO TODO
                 //递归处理 FieldConstraint
-                updateType(x,field.type);
+                updateType(x,type);
             }
             else
             {
@@ -121,5 +124,20 @@ public class XMLParser
     private static void updateType(Element root,Object type)
     {
         //TODO TODO TODO TODO TODO TODO
+        NodeList nodes = root.getChildNodes();
+        if(type instanceof MyString)
+        {
+            for(int i = 0;i < nodes.getLength();i++)
+            {
+                Node child0 = nodes.item(i);
+                if (!(child0 instanceof Element)) continue;
+
+                Element x = (Element) child0;
+                switch (x.getNodeName())
+                {
+                    case "MaxLength": break;
+                }
+            }
+        }
     }
 }
