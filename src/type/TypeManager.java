@@ -27,6 +27,10 @@ public class TypeManager
 
         }
     }
+    public Class classQuery(String classname)
+    {
+        return typeHashMap.get(classname);
+    }
     public Object createType(String s)
     {
         try

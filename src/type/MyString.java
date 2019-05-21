@@ -12,7 +12,6 @@ public class MyString
         MinLength = 0;
         MaxLength = 100000;
     }
-
     public MyString(int maxLength, int minLength)
     {
         MaxLength = maxLength;

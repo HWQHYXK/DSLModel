@@ -4,22 +4,10 @@ import type.MyString;
 
 public class Order
 {
-    private String EntityName = "销售订单";
-    /*ID是内码*/
-    private MyString ID = new MyString(6, 6);
+    public MyString ID = new MyString(6, 6);
     public Order(String ID)
     {
         this.ID.setValue(ID);
-    }
-
-    public MyString getID()
-    {
-        return ID;
-    }
-
-    public void setID(MyString ID)
-    {
-        this.ID = ID;
     }
 }
 
