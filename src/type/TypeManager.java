@@ -31,24 +31,29 @@ public class TypeManager
     }
     public Object createType(String s)
     {
+        System.out.println(s);
+
+        Object ret = null;
+        Class class0 = typeHashMap.get(s);
         try
         {
-            System.out.println(s);
+            ret = class0.newInstance();
+        }
+        catch (InstantiationException | IllegalAccessException e) { }
 
-            Class class0 = typeHashMap.get(s);
-            if (Class.forName("java.lang.Number") == class0.getSuperclass() || class0.equals(Boolean.class))
+        if(ret == null)
+        {
+            try
             {
                 Constructor constructor0 = class0.getConstructor(new String().getClass());
-                return constructor0.newInstance("0");
+                ret = constructor0.newInstance("0");
             }
-            return class0.newInstance();
+            catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) { }
         }
-        catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | ClassNotFoundException e)
-        {
 
-        }
-        return null;
+        return ret;
     }
+
     public <T> Object createType(String s,T... parameter)
     {
         try
