@@ -26,7 +26,7 @@ public class AnalogInput
     {
         try
         {
-            indent();
+//            indent();
             writer.write("import "+T.getName()+";");
         }catch (IOException e)
         {
@@ -57,7 +57,7 @@ public class AnalogInput
     {
         try
         {
-            indent();
+//            indent();
             writer.write("package " + namespace + ";");
         }catch (IOException e)
         {
@@ -69,7 +69,7 @@ public class AnalogInput
     {
         try
         {
-            indent();
+//            indent();
             writer.write("public class " + className);
         }catch (IOException e)
         {
@@ -81,7 +81,7 @@ public class AnalogInput
     {
         try
         {
-            indent();
+//            indent();
             writer.write("public " + name + "(" + parasString + ")");
             newLine();
             leftBrace();
@@ -95,6 +95,7 @@ public class AnalogInput
                 newLine();
             }
             revertIndent();
+            newLine();
             rightBrace();
         }catch (IOException e)
         {
@@ -106,7 +107,6 @@ public class AnalogInput
     {
         try
         {
-            indent();
             writer.write("public "+type+" "+variable+";");
         }catch (IOException e)
         {
@@ -118,7 +118,7 @@ public class AnalogInput
     {
         try
         {
-            indent();
+//            indent();
             writer.write("public "+type+" "+variable+" = new "+type+"("+paras+");");
         }catch (IOException e)
         {
@@ -142,9 +142,9 @@ public class AnalogInput
 
     public void addIndent() throws CodeGenerateException
     {
-        indentNum++;
         try
         {
+            indentNum++;
             writer.write(INDENT);
         }catch (IOException e)
         {
@@ -154,15 +154,15 @@ public class AnalogInput
 
     public void revertIndent() throws CodeGenerateException
     {
-        try
-        {
-            indentNum--;
-            writer.write(INDENT.replace(' ','\b')); //backspace
-        }catch (IOException e)
-        {
-            throw new CodeGenerateException(lineNum);
-        }
-        indent();
+        indentNum--;
+//        try
+//        {
+//            indentNum--;
+//            writer.write(INDENT.replace(' ','\b')); //backspace
+//        }catch (IOException e)
+//        {
+//            throw new CodeGenerateException(lineNum);
+//        }
     }
 
     //create brace and auto complement

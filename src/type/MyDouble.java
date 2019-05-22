@@ -13,6 +13,7 @@ public class MyDouble
         Length = 2;
         Precision = 8;
     }
+    @ConstructorToUse(initializedVariable = {"val", "Length", "Precision"})
     public MyDouble(double val,int length, int precision)
     {
         this.val = val;

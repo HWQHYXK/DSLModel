@@ -36,30 +36,14 @@ public class TypeManager
             System.out.println(s);
 
             Class class0 = typeHashMap.get(s);
-            if (Class.forName("java.lang.Number") == class0.getSuperclass())
+            if (Class.forName("java.lang.Number") == class0.getSuperclass() || class0.equals(Boolean.class))
             {
                 Constructor constructor0 = class0.getConstructor(new String().getClass());
                 return constructor0.newInstance("0");
             }
             return class0.newInstance();
         }
-        catch (NoSuchMethodException e)
-        {
-
-        }
-        catch (ClassNotFoundException e)
-        {
-
-        }
-        catch (IllegalAccessException e)
-        {
-
-        }
-        catch (InstantiationException e)
-        {
-
-        }
-        catch (InvocationTargetException e)
+        catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | ClassNotFoundException e)
         {
 
         }

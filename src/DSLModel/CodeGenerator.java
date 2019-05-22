@@ -58,18 +58,22 @@ public class CodeGenerator
         analog = new AnalogInput(file);
         analog.generateDescription(model.properties.get("EntityName"), model.properties.get("EntityDescription"));//generate description according to EntityNameSpace;
         analog.newLine();// Enter
+        analog.newLine();// Enter
         analog.generatePackage(model.properties.get("EntityNameSpace"));//generate package according to EntityNameSpace;
         analog.newLine();// Enter
+        analog.newLine();// Enter
         extractClasses();//create import statements
+        analog.newLine();// Enter
         analog.createClass(model.properties.get("EntityCode"));//generate class name according to EntityCode;
         analog.newLine();// Enter
         analog.leftBrace();// {
         analog.newLine();// Enter
         analog.addIndent();// Tab
-        generateFields();
-        generateConstructor();
-        analog.newLine();// Enter
+        generateFields();// generate fields
+        analog.newLine();
+        generateConstructor();// generate Constructor
         analog.revertIndent();
+        analog.newLine();// Enter
         analog.rightBrace();
         analog.end();
     }
@@ -96,10 +100,10 @@ public class CodeGenerator
             if(field.type instanceof MyString)
                 if(!((MyString)field.type).isEmpty())
                 {
-                    paras.append("MyString ").append(((MyString) field.type).getValue()).append(", ");
+                    paras.append("MyString ").append(field.properties.get("FieldCode")).append(", ");
                 }
         }
-        paras.delete(paras.length()-2, paras.length()-1);
+        paras.delete(paras.length()-2, paras.length());
         System.out.println(paras);
         analog.generateConstructor(model.properties.get("EntityCode"), paras.toString());
     }
@@ -108,12 +112,15 @@ public class CodeGenerator
     {
         for(Field field : model.fields)
         {
+            boolean found = false;//whether find annotation or not
             if(field.type instanceof HashMap)
                 continue;
-            for(Constructor constructor:field.type.getClass().getConstructors())
+            /*customized user Class, use Java Reflect mechanism*/
+            else for(Constructor constructor:field.type.getClass().getConstructors())
             {
                 if(constructor.getAnnotation(ConstructorToUse.class)!=null)
                 {
+                    found = true;
                     ConstructorToUse annotation = (ConstructorToUse) constructor.getAnnotation(ConstructorToUse.class);
                     if(((ConstructorToUse)constructor.getAnnotation(ConstructorToUse.class)).doConstruct())//if field needs to construct itself.
                     {
@@ -122,13 +129,15 @@ public class CodeGenerator
                         {
                             try
                             {
-                                paras.append(field.type.getClass().getField(para).get(field.type).toString()).append(", ");
+                                java.lang.reflect.Field field_ = field.type.getClass().getDeclaredField(para);
+                                field_.setAccessible(true);
+                                paras.append(field_.get(field.type).toString()).append(", ");
                             } catch (IllegalAccessException | NoSuchFieldException e)
                             {
                                 e.printStackTrace();
                             }
                         }
-                        paras.delete(paras.length()-2,paras.length()-1);
+                        paras.delete(paras.length()-2,paras.length());
                         analog.createFieldWithConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"), paras.toString());
                     }
                     else//no need to construct
@@ -138,6 +147,8 @@ public class CodeGenerator
                     break;
                 }
             }
+            //if not found, generate no constructor field.
+            if(!found)analog.createFieldWithoutConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"));
             analog.newLine();
         }
     }
