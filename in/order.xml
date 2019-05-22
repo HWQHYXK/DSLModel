@@ -59,11 +59,11 @@
         <Precision>2</Precision> 
       </FieldConstraint> 
     </EntityField>  
-    <EntityField> 
-      <FieldCode>Status</FieldCode>  
-      <FieldName>订单状态</FieldName>  
-      <FieldType>int</FieldType>  
-      <FieldConstraint> 
+    <EntityField>
+      <FieldCode>Status</FieldCode>
+      <FieldName>订单状态</FieldName>
+      <FieldType>int</FieldType>
+      <FieldConstraint>
         <IsEnum>true</IsEnum>
         <EnumCollection>
           <Key>0</Key>
@@ -72,16 +72,16 @@
         <EnumCollection>
           <Key>1</Key>
           <Value>Created</Value>
-        </EnumCollection> 
-      </FieldConstraint> 
-    </EntityField>  
+        </EnumCollection>
+      </FieldConstraint>
+    </EntityField>
     <EntityField> 
       <FieldCode>IsVip</FieldCode>  
       <FieldName>是否会员</FieldName>  
       <FieldType>bool</FieldType> 
     </EntityField>  
     <EntityField> 
-      <FieldCode> </FieldCode>  
+      <FieldCode>Date</FieldCode>
       <FieldName>创建时间</FieldName>  
       <FieldType>DateTime</FieldType> 
     </EntityField> 

@@ -2,6 +2,7 @@ package DSLModel;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AnalogInput
 {
@@ -26,7 +27,7 @@ public class AnalogInput
     {
         try
         {
-            indent();
+//            indent();
             writer.write("import "+T.getName()+";");
         }catch (IOException e)
         {
@@ -57,7 +58,7 @@ public class AnalogInput
     {
         try
         {
-            indent();
+//            indent();
             writer.write("package " + namespace + ";");
         }catch (IOException e)
         {
@@ -69,8 +70,46 @@ public class AnalogInput
     {
         try
         {
-            indent();
+//            indent();
             writer.write("public class " + className);
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    public void createEnum(String enumName, HashMap<Integer, String> map) throws CodeGenerateException
+    {
+        try
+        {
+            writer.write("public enum"+enumName);
+            newLine();
+            leftBrace();
+            newLine();
+            addIndent();
+            StringBuilder builder = new StringBuilder();
+            for(Integer key : map.keySet())
+            {
+                builder.append(map.get(key)).append("(").append(key).append("), ");
+            }
+            builder.delete(builder.length()-2,builder.length());
+            builder.append(";");
+            writer.write(builder.toString());
+            newLine();
+            writer.write("private int value;\n" +
+                    "    OderStatus(int value)\n" +
+                    "    {\n" +
+                    "        this.value = value;\n" +
+                    "    }\n" +
+                    "    public int getValue()\n" +
+                    "    {\n" +
+                    "        return value;\n" +
+                    "    }");
+            lineNum+=8;
+            System.out.println(lineNum);//TODO
+            revertIndent();
+            newLine();
+            rightBrace();
         }catch (IOException e)
         {
             throw new CodeGenerateException(lineNum);
@@ -81,7 +120,7 @@ public class AnalogInput
     {
         try
         {
-            indent();
+//            indent();
             writer.write("public " + name + "(" + parasString + ")");
             newLine();
             leftBrace();
@@ -95,6 +134,7 @@ public class AnalogInput
                 newLine();
             }
             revertIndent();
+            newLine();
             rightBrace();
         }catch (IOException e)
         {
@@ -106,8 +146,18 @@ public class AnalogInput
     {
         try
         {
-            indent();
             writer.write("public "+type+" "+variable+";");
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    public void generateFieldDescription(String fieldName) throws CodeGenerateException
+    {
+        try
+        {
+            writer.write("// "+fieldName);
         }catch (IOException e)
         {
             throw new CodeGenerateException(lineNum);
@@ -118,7 +168,7 @@ public class AnalogInput
     {
         try
         {
-            indent();
+//            indent();
             writer.write("public "+type+" "+variable+" = new "+type+"("+paras+");");
         }catch (IOException e)
         {
@@ -142,9 +192,9 @@ public class AnalogInput
 
     public void addIndent() throws CodeGenerateException
     {
-        indentNum++;
         try
         {
+            indentNum++;
             writer.write(INDENT);
         }catch (IOException e)
         {
@@ -154,15 +204,15 @@ public class AnalogInput
 
     public void revertIndent() throws CodeGenerateException
     {
-        try
-        {
-            indentNum--;
-            writer.write(INDENT.replace(' ','\b')); //backspace
-        }catch (IOException e)
-        {
-            throw new CodeGenerateException(lineNum);
-        }
-        indent();
+        indentNum--;
+//        try
+//        {
+//            indentNum--;
+//            writer.write(INDENT.replace(' ','\b')); //backspace
+//        }catch (IOException e)
+//        {
+//            throw new CodeGenerateException(lineNum);
+//        }
     }
 
     //create brace and auto complement
