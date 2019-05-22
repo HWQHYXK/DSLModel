@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.xml.sax.SAXException;
+import type.TypeManager;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -12,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class XMLParser
 {
+    TypeManager typeManager = new TypeManager();
     static Entity buildEntity(String url)
     {
         Entity entity = new Entity();
@@ -93,7 +95,7 @@ public class XMLParser
             if(x.getNodeName().equals("FieldType"))
             {
                 String content = x.getFirstChild().getNodeValue();
-                field.type = new type.TypeManager().createType(content);
+                field.type = TypeManager.createType(content);
             }
         }
 

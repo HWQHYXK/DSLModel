@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class TypeManager
 {
-    private HashMap<String,Class> typeHashMap;
+    private static HashMap<String,Class> typeHashMap;
     public TypeManager()
     {
         typeHashMap = new HashMap<>();
@@ -29,7 +29,7 @@ public class TypeManager
 
         }
     }
-    public Object createType(String s)
+    public static Object createType(String s)
     {
         try
         {
@@ -65,7 +65,7 @@ public class TypeManager
         }
         return null;
     }
-    public <T> Object createType(String s,T... parameter)
+    public static <T> Object createType(String s,T... parameter)
     {
         try
         {

@@ -64,14 +64,14 @@
       <FieldName>订单状态</FieldName>  
       <FieldType>int</FieldType>  
       <FieldConstraint> 
-        <IsEnum>true</IsEnum>  
-        <EnumCollection> 
-          <Key>0</Key>  
-          <Value>Creating</Value> 
-        </EnumCollection>  
-        <EnumCollection> 
-          <Key>1</Key>  
-          <Value>Created</Value> 
+        <IsEnum>true</IsEnum>
+        <EnumCollection>
+          <Key>0</Key>
+          <Value>Creating</Value>
+        </EnumCollection>
+        <EnumCollection>
+          <Key>1</Key>
+          <Value>Created</Value>
         </EnumCollection> 
       </FieldConstraint> 
     </EntityField>  
