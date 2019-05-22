@@ -1,7 +1,5 @@
 package DSLModel;
 
-import type.Type;
-
 import java.util.HashMap;
 
 public class Field
