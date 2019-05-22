@@ -1,9 +1,11 @@
 package type;
 
+
 public class MyString
 {
     private String value;
     //FieldConstraint
+
     private int MaxLength,MinLength;
     private boolean IsEmpty;
     //构造
@@ -12,10 +14,18 @@ public class MyString
         MinLength = 0;
         MaxLength = 100000;
     }
+    @ConstructorToUse(initializedVariable = {"MaxLength", "MinLength"})
     public MyString(int maxLength, int minLength)
     {
         MaxLength = maxLength;
         MinLength = minLength;
+    }
+
+    public MyString(int maxLength, int minLength, boolean isEmpty)
+    {
+        MaxLength = maxLength;
+        MinLength = minLength;
+        IsEmpty = isEmpty;
     }
 
     //判断字符串是否符合 FieldConstraint 中的限制条件

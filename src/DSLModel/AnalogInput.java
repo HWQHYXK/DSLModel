@@ -10,10 +10,16 @@ public class AnalogInput
     private int lineNum = 1;
     private int indentNum = 0;
     private final String INDENT = "    ";
-    public AnalogInput(File outputFile) throws IOException
+    public AnalogInput(File outputFile)
     {
         this.outputFile = outputFile;
-        writer = new BufferedWriter(new FileWriter(outputFile));
+        try
+        {
+            writer = new BufferedWriter(new FileWriter(outputFile));
+        }catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void importClass(Class T) throws CodeGenerateException
@@ -84,8 +90,8 @@ public class AnalogInput
             String[] paras = parasString.split(", ");
             for(String para : paras)
             {
-                String varaible = para.split(" ")[1];
-                writer.write("this."+varaible+".setValue("+varaible+");");
+                String variable = para.split(" ")[1];
+                writer.write("this."+variable+".setValue("+variable+");");
                 newLine();
             }
             revertIndent();
@@ -95,29 +101,39 @@ public class AnalogInput
             throw new CodeGenerateException(lineNum);
         }
     }
-    public void createField(String type, String variable, String paras) throws CodeGenerateException
+
+    public void createFieldWithoutConstructor(String type, String variable) throws CodeGenerateException
     {
         try
         {
             indent();
-            writer.write("public "+type+" "+variable+" = new ("+type+paras+");");
+            writer.write("public "+type+" "+variable+";");
         }catch (IOException e)
         {
             throw new CodeGenerateException(lineNum);
         }
     }
 
-    private String indent() throws CodeGenerateException
+    public void createFieldWithConstructor(String type, String variable, String paras) throws CodeGenerateException
     {
-        StringBuilder indent = new StringBuilder();//use StringBuilder to enhance append performance and security
+        try
+        {
+            indent();
+            writer.write("public "+type+" "+variable+" = new "+type+"("+paras+");");
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    private void indent() throws CodeGenerateException
+    {
         try
         {
             for(int i=1;i<=indentNum;i++)
             {
                 writer.write(INDENT);
-                indent.append(INDENT);
             }
-            return indent.toString();
         }catch (IOException e)
         {
             throw new CodeGenerateException(lineNum);

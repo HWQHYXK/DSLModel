@@ -1,13 +1,17 @@
 package DSLModel;
 
+import type.ConstructorToUse;
 import type.MyString;
 import type.TypeManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.AnnotationFormatError;
+import java.lang.reflect.Constructor;
 import java.nio.file.FileSystemException;
 import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class CodeGenerator
@@ -31,13 +35,27 @@ public class CodeGenerator
         checkDirectory();
     }
 
+    public void generateContents()
+    {
+        //Create Files
+        try
+        {
+            createMainClass(createFiles(model.properties.get("EntityCode")+".java"));//generate $EntityCode.java
+        }catch (CodeGenerateException e)
+        {
+            e.printStackTrace();
+        }
+        createFiles(model.properties.get("EntityCode")+"Dao.java");//generate $EntityCode.java
+    }
+
     public void setSource(Entity model)
     {
         this.model = model;
     }
 
-    private void createMainClass() throws CodeGenerateException
+    private void createMainClass(File file) throws CodeGenerateException
     {
+        analog = new AnalogInput(file);
         analog.generateDescription(model.properties.get("EntityName"), model.properties.get("EntityDescription"));//generate description according to EntityNameSpace;
         analog.newLine();// Enter
         analog.generatePackage(model.properties.get("EntityNameSpace"));//generate package according to EntityNameSpace;
@@ -48,9 +66,12 @@ public class CodeGenerator
         analog.leftBrace();// {
         analog.newLine();// Enter
         analog.addIndent();// Tab
+        generateFields();
         generateConstructor();
         analog.newLine();// Enter
-
+        analog.revertIndent();
+        analog.rightBrace();
+        analog.end();
     }
 
     private void createDaoClass() throws CodeGenerateException
@@ -87,13 +108,53 @@ public class CodeGenerator
     {
         for(Field field : model.fields)
         {
-//            analog.createField(field.type.getClass(), field.properties.get("FieldCode"), field.type.getClass().ge);//TODO
+            if(field.type instanceof HashMap)
+                continue;
+            for(Constructor constructor:field.type.getClass().getConstructors())
+            {
+                if(constructor.getAnnotation(ConstructorToUse.class)!=null)
+                {
+                    ConstructorToUse annotation = (ConstructorToUse) constructor.getAnnotation(ConstructorToUse.class);
+                    if(((ConstructorToUse)constructor.getAnnotation(ConstructorToUse.class)).doConstruct())//if field needs to construct itself.
+                    {
+                        StringBuilder paras = new StringBuilder();
+                        for(String para:annotation.initializedVariable())
+                        {
+                            try
+                            {
+                                paras.append(field.type.getClass().getField(para).get(field.type).toString()).append(", ");
+                            } catch (IllegalAccessException | NoSuchFieldException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        paras.delete(paras.length()-2,paras.length()-1);
+                        analog.createFieldWithConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"), paras.toString());
+                    }
+                    else//no need to construct
+                    {
+                        analog.createFieldWithoutConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"));
+                    }
+                    break;
+                }
+            }
+            analog.newLine();
         }
     }
 
-    private void createFiles(File file)
+    private File createFiles(String file)
     {
+        File fileCreating = new File(outputDir.getAbsolutePath()+System.getProperty("file.separator")+file);//handle windows and linux path compatibility
 
+            try
+            {
+                if(!fileCreating.exists()&&fileCreating.createNewFile())
+                    System.out.println("Created new Files.");
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        return fileCreating;
     }
 
     private void checkDirectory()
