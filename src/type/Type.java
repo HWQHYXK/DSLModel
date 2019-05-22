@@ -1,10 +1,10 @@
 //暂时废弃 ！！！
 
 package type;
-
 import org.w3c.dom.Element;
 
 //非基本类型的 字段类型 接口
+@Deprecated
 public interface Type
 {
     boolean isEmpty = true;

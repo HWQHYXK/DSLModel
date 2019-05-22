@@ -1,7 +1,7 @@
 //暂时废弃 ！！！
 
 package type;
-
+@Deprecated
 public class CommonType
 {
     private String type;

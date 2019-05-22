@@ -149,7 +149,7 @@ public class XMLParser
                         if (!(child0 instanceof Element)) continue;
 
                         x = (Element) child0;
-                        if(x.getNodeName() == "EnumCollection")
+                        if(x.getNodeName().equals("EnumCollection"))
                         {
                             int Key=-1;
                             String Value = new String();
@@ -160,7 +160,7 @@ public class XMLParser
                                 if (!(child1 instanceof Element)) continue;
 
                                 Element y = (Element) child1;
-                                if(y.getNodeName() == "Key")
+                                if(y.getNodeName().equals( "Key"))
                                     Key = Integer.parseInt(y.getFirstChild().getNodeValue());
                                 else Value = y.getFirstChild().getNodeValue();
                             }

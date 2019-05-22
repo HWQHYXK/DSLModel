@@ -2,16 +2,15 @@ package DSLModel;
 
 import type.ConstructorToUse;
 import type.MyString;
-import type.TypeManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.AnnotationFormatError;
 import java.lang.reflect.Constructor;
 import java.nio.file.FileSystemException;
 import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 
 public class CodeGenerator
@@ -78,6 +77,19 @@ public class CodeGenerator
         analog.end();
     }
 
+    private void createEnumClass(Field field) throws CodeGenerateException
+    {
+        AnalogInput analog_ = new AnalogInput(createFiles(model.properties.get("EntityCode")+field.properties.get("FieldCode")+".java"));
+        analog_.generateFieldDescription(field.properties.get("FieldName"));
+        analog_.newLine();
+        analog_.newLine();
+        analog_.generatePackage(model.properties.get("EntityNameSpace"));
+        analog_.newLine();
+        analog_.newLine();
+        analog_.createEnum(field.properties.get("FieldCode"), (HashMap<Integer, String>) field.type);
+        analog_.end();
+    }
+
     private void createDaoClass() throws CodeGenerateException
     {
 
@@ -85,9 +97,14 @@ public class CodeGenerator
 
     private void extractClasses() throws CodeGenerateException
     {
+        HashSet<Class> bufferSets = new HashSet<>();// use Set to avoid repeat import statements
         for(Field field : model.fields)
         {
-            analog.importClass(field.type.getClass());
+            bufferSets.add(field.type.getClass());
+        }
+        for(Class class_ : bufferSets)
+        {
+            analog.importClass(class_);
             analog.newLine();
         }
     }
@@ -113,8 +130,12 @@ public class CodeGenerator
         for(Field field : model.fields)
         {
             boolean found = false;//whether find annotation or not
+            //if type equals HashMap, then create Enum class
             if(field.type instanceof HashMap)
-                continue;
+            {
+                createEnumClass(field);
+                analog.createFieldWithoutConstructor(model.properties.get("EntityCode")+field.properties.get("FieldCode"), field.properties.get("FieldCode"));
+            }
             /*customized user Class, use Java Reflect mechanism*/
             else for(Constructor constructor:field.type.getClass().getConstructors())
             {
@@ -149,6 +170,7 @@ public class CodeGenerator
             }
             //if not found, generate no constructor field.
             if(!found)analog.createFieldWithoutConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"));
+            analog.generateFieldDescription(field.properties.get("FieldName"));
             analog.newLine();
         }
     }

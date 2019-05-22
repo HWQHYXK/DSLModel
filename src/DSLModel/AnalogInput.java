@@ -2,6 +2,7 @@ package DSLModel;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AnalogInput
 {
@@ -77,6 +78,44 @@ public class AnalogInput
         }
     }
 
+    public void createEnum(String enumName, HashMap<Integer, String> map) throws CodeGenerateException
+    {
+        try
+        {
+            writer.write("public enum"+enumName);
+            newLine();
+            leftBrace();
+            newLine();
+            addIndent();
+            StringBuilder builder = new StringBuilder();
+            for(Integer key : map.keySet())
+            {
+                builder.append(map.get(key)).append("(").append(key).append("), ");
+            }
+            builder.delete(builder.length()-2,builder.length());
+            builder.append(";");
+            writer.write(builder.toString());
+            newLine();
+            writer.write("private int value;\n" +
+                    "    OderStatus(int value)\n" +
+                    "    {\n" +
+                    "        this.value = value;\n" +
+                    "    }\n" +
+                    "    public int getValue()\n" +
+                    "    {\n" +
+                    "        return value;\n" +
+                    "    }");
+            lineNum+=8;
+            System.out.println(lineNum);//TODO
+            revertIndent();
+            newLine();
+            rightBrace();
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
     public void generateConstructor(String name, String parasString) throws CodeGenerateException //paras form goes like MyString a, MyString b
     {
         try
@@ -108,6 +147,17 @@ public class AnalogInput
         try
         {
             writer.write("public "+type+" "+variable+";");
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    public void generateFieldDescription(String fieldName) throws CodeGenerateException
+    {
+        try
+        {
+            writer.write("// "+fieldName);
         }catch (IOException e)
         {
             throw new CodeGenerateException(lineNum);
