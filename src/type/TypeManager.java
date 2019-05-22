@@ -1,11 +1,7 @@
 package type;
 
-
-import javafx.scene.shape.ClosePathBuilder;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TypeManager
@@ -18,19 +14,56 @@ public class TypeManager
         {
             Class MyString = Class.forName("type.MyString");
             Class MyDouble = Class.forName("type.MyDouble");
-            Class Boolean = Class.forName("Boolean");
-            Class Integer = Class.forName("Integer");
-
+            Class Boolean = Class.forName("java.lang.Boolean");
+            Class Integer = Class.forName("java.lang.Integer");
+            Class Date = Class.forName("java.util.Date");
 
             typeHashMap.put("string", MyString);
             typeHashMap.put("double", MyDouble);
             typeHashMap.put("bool", Boolean);
             typeHashMap.put("int", Integer);
+            typeHashMap.put("DateTime", Date);
         }
         catch (ClassNotFoundException e)
         {
 
         }
+    }
+    public Object createType(String s)
+    {
+        try
+        {
+            System.out.println(s);
+
+            Class class0 = typeHashMap.get(s);
+            if (Class.forName("java.lang.Number") == class0.getSuperclass())
+            {
+                Constructor constructor0 = class0.getConstructor(new String().getClass());
+                return constructor0.newInstance("0");
+            }
+            return class0.newInstance();
+        }
+        catch (NoSuchMethodException e)
+        {
+
+        }
+        catch (ClassNotFoundException e)
+        {
+
+        }
+        catch (IllegalAccessException e)
+        {
+
+        }
+        catch (InstantiationException e)
+        {
+
+        }
+        catch (InvocationTargetException e)
+        {
+
+        }
+        return null;
     }
     public <T> Object createType(String s,T... parameter)
     {
@@ -39,6 +72,7 @@ public class TypeManager
             System.out.println(s);
 
             Class class0 = typeHashMap.get(s);
+
             Class classes[] = new Class[parameter.length];
             for(int i = 0;i < parameter.length;i++)
                 classes[i] = parameter[i].getClass();

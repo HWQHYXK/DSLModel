@@ -2,6 +2,8 @@ package DSLModel;
 
 import org.w3c.dom.*;
 import java.io.IOException;
+import java.util.HashMap;
+
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -66,7 +68,7 @@ public class XMLParser
                     }
                     else throw new RuntimeException();
                 }
-            } 
+            }
             else
             {
                 //更新普通的属性 properties
@@ -125,7 +127,66 @@ public class XMLParser
         NodeList nodes = root.getChildNodes();
         if(type instanceof Integer)
         {
-            //TODO TODO TODO TODO TODO TODO
+            //判断是什么子类型
+            for(int i = 0;i < nodes.getLength();i++)
+            {
+                Node child0 = nodes.item(i);
+                if (!(child0 instanceof Element)) continue;
+
+                Element x = (Element) child0;
+                String name = x.getNodeName();
+                String content = x.getFirstChild().getNodeValue();
+
+                if(name == "IsEnum" && content == "true")
+                {
+                    //因为要 break 所以这里重复使用前面的变量没有问题
+                    child0 = nodes.item(i);
+                    HashMap<Integer,String> Enum=new HashMap<>();
+                    for(i = 0;i < nodes.getLength();i++)
+                    {
+                        if (!(child0 instanceof Element)) continue;
+
+                        x = (Element) child0;
+                        if(x.getNodeName() == "EnumCollection")
+                        {
+                            int Key=-1;
+                            String Value = new String();
+                            NodeList fieldNodes = x.getChildNodes();
+                            for(int j = 0;j < fieldNodes.getLength();j++)
+                            {
+                                Node child1 = fieldNodes.item(j);
+                                if (!(child1 instanceof Element)) continue;
+
+                                Element y = (Element) child1;
+                                if(y.getNodeName() == "Key")
+                                    Key = Integer.parseInt(y.getFirstChild().getNodeValue());
+                                else Value = y.getFirstChild().getNodeValue();
+
+                                if(Key != -1 && !Value.isEmpty())
+                                    Enum.put(Key,Value);
+                            }
+                        }
+                    }
+                    type = Enum;
+                    break;
+                }
+
+                if(name == "Int16" && content == "true")
+                {
+                    type = new Short("0");
+                    break;
+                }
+                if(name == "Int32" && content == "true")
+                {
+                    type = new Integer("0");
+                    break;
+                }
+                if(name == "Int64" && content == "true")
+                {
+                    type = new Long("0");
+                    break;
+                }
+            }
         }
         else
         {
