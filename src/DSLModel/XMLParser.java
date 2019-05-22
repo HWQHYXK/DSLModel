@@ -111,7 +111,7 @@ public class XMLParser
             if(x.getNodeName().equals("FieldConstraint"))
             {
                 //递归处理 FieldConstraint
-                updateType(x,field.type);
+                updateTypeOfField(x,field);
             }
             else
             {
@@ -123,11 +123,11 @@ public class XMLParser
         }
     }
 
-    private void updateType(Element root,Object type)
+    private void updateTypeOfField(Element root,Field field)
     {
-        Class class0 = type.getClass();
+        Class class0 = field.type.getClass();
         NodeList nodes = root.getChildNodes();
-        if(type instanceof Integer)
+        if(field.type instanceof Integer)
         {
             //判断是什么子类型
             for(int i = 0;i < nodes.getLength();i++)
@@ -149,7 +149,7 @@ public class XMLParser
                         if (!(child0 instanceof Element)) continue;
 
                         x = (Element) child0;
-                        if(x.getNodeName() == "EnumCollection")
+                        if(x.getNodeName().equals("EnumCollection"))
                         {
                             int Key=-1;
                             String Value = new String();
@@ -160,31 +160,32 @@ public class XMLParser
                                 if (!(child1 instanceof Element)) continue;
 
                                 Element y = (Element) child1;
-                                if(y.getNodeName() == "Key")
+                                if(y.getNodeName().equals("Key"))
                                     Key = Integer.parseInt(y.getFirstChild().getNodeValue());
-                                else Value = y.getFirstChild().getNodeValue();
+                                else if(y.getNodeName().equals("Value"))
+                                    Value = y.getFirstChild().getNodeValue();
                             }
                             if(Key != -1 && !Value.isEmpty())
                                 Enum.put(Key,Value);
                         }
                     }
-                    type = Enum;
+                    field.type = Enum;
                     break;
                 }
 
                 if(name.equals("Int16") && content.equals("true"))
                 {
-                    type = new Short("0");
+                    field.type = new Short("0");
                     break;
                 }
                 if(name.equals("Int32") && content.equals("true"))
                 {
-                    type = new Integer("0");
+                    field.type = new Integer("0");
                     break;
                 }
                 if(name.equals("Int64") && content.equals("true"))
                 {
-                    type = new Long("0");
+                    field.type = new Long("0");
                     break;
                 }
             }
@@ -205,12 +206,12 @@ public class XMLParser
                     java.lang.reflect.Field tt = class0.getDeclaredField(name);
                     tt.setAccessible(true);
                     if(tt.getType() == int.class)
-                        tt.setInt(type,Integer.parseInt(content));
+                        tt.setInt(field.type,Integer.parseInt(content));
                     else if(tt.getType() == boolean.class)
-                        tt.setBoolean(type,Boolean.parseBoolean(content));
+                        tt.setBoolean(field.type,Boolean.parseBoolean(content));
                     else if(tt.getType() == double.class)
-                        tt.setDouble(type,Double.parseDouble(content));
-                    else tt.set(type,content);
+                        tt.setDouble(field.type,Double.parseDouble(content));
+                    else tt.set(field.type,content);
                 }
                 catch (NoSuchFieldException e)
                 {
