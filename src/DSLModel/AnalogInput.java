@@ -71,12 +71,36 @@ public class AnalogInput
         }
     }
 
-    public void generateConstructor(String name, String paras) throws CodeGenerateException //paras form goes like String a, String b
+    public void generateConstructor(String name, String parasString) throws CodeGenerateException //paras form goes like MyString a, MyString b
     {
         try
         {
             indent();
-            writer.write("public " + name + "(" + paras + ")");
+            writer.write("public " + name + "(" + parasString + ")");
+            newLine();
+            leftBrace();
+            newLine();
+            addIndent();
+            String[] paras = parasString.split(", ");
+            for(String para : paras)
+            {
+                String varaible = para.split(" ")[1];
+                writer.write("this."+varaible+".setValue("+varaible+");");
+                newLine();
+            }
+            revertIndent();
+            rightBrace();
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+    public void createField(String type, String variable, String paras) throws CodeGenerateException
+    {
+        try
+        {
+            indent();
+            writer.write("public "+type+" "+variable+" = new ("+type+paras+");");
         }catch (IOException e)
         {
             throw new CodeGenerateException(lineNum);

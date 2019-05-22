@@ -1,6 +1,7 @@
 package DSLModel;
 
 import type.MyString;
+import type.TypeManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +44,7 @@ public class CodeGenerator
         analog.newLine();// Enter
         extractClasses();//create import statements
         analog.createClass(model.properties.get("EntityCode"));//generate class name according to EntityCode;
+        analog.newLine();// Enter
         analog.leftBrace();// {
         analog.newLine();// Enter
         analog.addIndent();// Tab
@@ -73,7 +75,7 @@ public class CodeGenerator
             if(field.type instanceof MyString)
                 if(!((MyString)field.type).isEmpty())
                 {
-                    paras.append((((MyString) field.type).getValue())+ ", ");
+                    paras.append("MyString ").append(((MyString) field.type).getValue()).append(", ");
                 }
         }
         paras.delete(paras.length()-2, paras.length()-1);
@@ -85,7 +87,7 @@ public class CodeGenerator
     {
         for(Field field : model.fields)
         {
-
+//            analog.createField(field.type.getClass(), field.properties.get("FieldCode"), field.type.getClass().ge);//TODO
         }
     }
 
