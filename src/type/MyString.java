@@ -41,6 +41,16 @@ public class MyString
         return IsEmpty;
     }
 
+    public int getMaxLength()
+    {
+        return MaxLength;
+    }
+
+    public int getMinLength()
+    {
+        return MinLength;
+    }
+
     public String getValue()
     {
         return value;

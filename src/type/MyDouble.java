@@ -29,4 +29,14 @@ public class MyDouble
     {
         this.val = val;
     }
+
+    public int getLength()
+    {
+        return Length;
+    }
+
+    public int getPrecision()
+    {
+        return Precision;
+    }
 }

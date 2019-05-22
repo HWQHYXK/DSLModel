@@ -82,7 +82,7 @@ public class AnalogInput
     {
         try
         {
-            writer.write("public enum"+enumName);
+            writer.write("public enum "+enumName);
             newLine();
             leftBrace();
             newLine();
@@ -96,20 +96,68 @@ public class AnalogInput
             builder.append(";");
             writer.write(builder.toString());
             newLine();
-            writer.write("private int value;\n" +
-                    "    OderStatus(int value)\n" +
-                    "    {\n" +
-                    "        this.value = value;\n" +
-                    "    }\n" +
-                    "    public int getValue()\n" +
-                    "    {\n" +
-                    "        return value;\n" +
+            writer.write("private int value;\r\n" +
+                    "    OrderStatus(int value)\r\n" +
+                    "    {\r\n" +
+                    "        this.value = value;\r\n" +
+                    "    }\r\n" +
+                    "    public int getValue()\r\n" +
+                    "    {\r\n" +
+                    "        return value;\r\n" +
                     "    }");
             lineNum+=8;
-            System.out.println(lineNum);//TODO
             revertIndent();
             newLine();
             rightBrace();
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    public void createDaoMain() throws CodeGenerateException
+    {
+        try
+        {
+            writer.write("public static void main(String[] args) throws Exception\r\n" +
+                    "    {\r\n" +
+                    "        Class.forName(\"com.mysql.jdbc.Driver\");\r\n" +
+                    "        System.out.println(\"Driver Load Properly!\");\r\n" +
+                    "\r\n" +
+                    "        Connection connection = null;\r\n" +
+                    "        Statement statement = null;\r\n" +
+                    "        ResultSet resultSet = null;\r\n" +
+                    "\r\n" +
+                    "        try\r\n" +
+                    "        {\r\n" +
+                    "            String url = \"jdbc:mysql://localhost:3306/\";\r\n" +
+                    "            connection = DriverManager.getConnection(url);\r\n" +
+                    "            System.out.println(\"Database Connected!\");\r\n" +
+                    "\r\n" +
+                    "            statement = connection.createStatement();\r\n" +
+                    "            resultSet = statement.executeQuery(sql);\r\n" +
+                    "\r\n" +
+                    "            resultSet.beforeFirst();\r\n" +
+                    "            while (resultSet.next()) {\r\n" +
+                    "                System.out.println(resultSet.getString(1));\r\n" +
+                    "            }\r\n" +
+                    "            System.out.println("+"\"Valid Operation!"+"\");\r\n" +
+                    "        } catch(Throwable t)\r\n" +
+                    "        {\r\n" +
+                    "            // TODO Handle Exception\r\n" +
+                    "            t.printStackTrace();\r\n" +
+                    "        } finally\r\n" +
+                    "        {\r\n" +
+                    "            if (resultSet != null)\r\n" +
+                    "                resultSet.close();\r\n" +
+                    "            if (statement != null)\r\n" +
+                    "                statement.close();\r\n" +
+                    "            if (connection != null)\r\n" +
+                    "                connection.close();\r\n" +
+                    "            System.out.println(\"Close Properly!\");\r\n" +
+                    "        }\r\n" +
+                    "    }");
+            lineNum+=37;
         }catch (IOException e)
         {
             throw new CodeGenerateException(lineNum);
@@ -147,6 +195,17 @@ public class AnalogInput
         try
         {
             writer.write("public "+type+" "+variable+";");
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    public void createStaticSqlConstructor(String sql) throws CodeGenerateException
+    {
+        try
+        {
+            writer.write("private static String sql = "+"\""+ sql +"\";");
         }catch (IOException e)
         {
             throw new CodeGenerateException(lineNum);

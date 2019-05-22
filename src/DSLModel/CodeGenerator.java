@@ -1,17 +1,17 @@
 package DSLModel;
 
 import type.ConstructorToUse;
+import type.MyDouble;
 import type.MyString;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.nio.file.FileSystemException;
 import java.nio.file.NotDirectoryException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.*;
 
 public class CodeGenerator
 {
@@ -20,6 +20,7 @@ public class CodeGenerator
     private Scanner scanner = new Scanner(System.in);
     private ArrayList<Class> classes = new ArrayList<>();
     private AnalogInput analog;
+    private HashMap<Class, String>sqlMap = new HashMap<>();
 
     public CodeGenerator(File outputDir)
     {
@@ -40,6 +41,7 @@ public class CodeGenerator
         try
         {
             createMainClass(createFiles(model.properties.get("EntityCode")+".java"));//generate $EntityCode.java
+            createDaoClass(createFiles(model.properties.get("EntityCode")+"Dao.java"));
         }catch (CodeGenerateException e)
         {
             e.printStackTrace();
@@ -50,6 +52,11 @@ public class CodeGenerator
     public void setSource(Entity model)
     {
         this.model = model;
+    }
+
+    public void setSqlMap(HashMap<Class, String> map)
+    {
+        this.sqlMap = map;
     }
 
     private void createMainClass(File file) throws CodeGenerateException
@@ -86,13 +93,70 @@ public class CodeGenerator
         analog_.generatePackage(model.properties.get("EntityNameSpace"));
         analog_.newLine();
         analog_.newLine();
-        analog_.createEnum(field.properties.get("FieldCode"), (HashMap<Integer, String>) field.type);
+        analog_.createEnum(model.properties.get("EntityCode")+field.properties.get("FieldCode"), (HashMap<Integer, String>) field.type);
         analog_.end();
     }
 
-    private void createDaoClass() throws CodeGenerateException
+    private void createDaoClass(File file) throws CodeGenerateException
     {
+        sqlMap.put(Integer.class, "INT");
+        sqlMap.put(HashMap.class, "INT");
+        sqlMap.put(Short.class, "SMALL INT");
+        sqlMap.put(Long.class, "BIG INT");
+        sqlMap.put(MyDouble.class, "DOUBLE");
+        sqlMap.put(Boolean.class, "BOOL");
+        sqlMap.put(MyString.class, "VARCHAR");
+        sqlMap.put(Date.class, "DATETIME");
+        AnalogInput analog_ = new AnalogInput(file);
+        StringBuilder sql = new StringBuilder();
 
+        /*process head part*/
+        analog_.generateDescription(model.properties.get("EntityName"), model.properties.get("EntityDescription"));
+        analog_.newLine();
+        analog_.newLine();
+        analog_.generatePackage(model.properties.get("EntityNameSpace"));
+        analog_.newLine();
+        analog_.newLine();
+        analog_.importClass(java.sql.Connection.class);
+        analog_.newLine();
+        analog_.importClass(java.sql.DriverManager.class);
+        analog_.newLine();
+        analog_.importClass(java.sql.ResultSet.class);
+        analog_.newLine();
+        analog_.importClass(java.sql.Statement.class);
+        analog_.newLine();
+        analog_.newLine();
+        analog_.createClass(model.properties.get("EntityCode")+"Dao");
+        analog_.newLine();
+        analog_.leftBrace();
+        analog_.newLine();
+        analog_.addIndent();
+
+        /*process sql statement*/
+        sql.append("CREATE TABLE ").append(model.properties.get("EntityTableCode")).append("(");
+        for(Field field:model.fields)
+        {
+            sql.append(field.properties.get("FieldCode")).append(" ").append(sqlMap.get(field.type.getClass()));
+            if(field.type instanceof MyString)
+            {
+                sql.append("(").append(((MyString) field.type).getMaxLength()).append(") ");
+                if(!((MyString) field.type).isEmpty())sql.append("NOT NULL ");
+            }
+            if(field.type instanceof MyDouble)
+            {
+                sql.append("(").append(((MyDouble) field.type).getLength()).append(", ").append(((MyDouble) field.type).getPrecision()).append(")");
+            }
+            sql.append(", ");
+        }
+        sql.delete(sql.length()-2,sql.length());
+        sql.append(")ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        analog_.createStaticSqlConstructor(sql.toString());
+        analog_.newLine();
+        analog_.createDaoMain();
+        analog_.revertIndent();
+        analog_.newLine();
+        analog_.rightBrace();
+        analog_.end();
     }
 
     private void extractClasses() throws CodeGenerateException
@@ -100,7 +164,8 @@ public class CodeGenerator
         HashSet<Class> bufferSets = new HashSet<>();// use Set to avoid repeat import statements
         for(Field field : model.fields)
         {
-            bufferSets.add(field.type.getClass());
+            if(!(field.type instanceof HashMap))
+                bufferSets.add(field.type.getClass());
         }
         for(Class class_ : bufferSets)
         {
@@ -117,11 +182,10 @@ public class CodeGenerator
             if(field.type instanceof MyString)
                 if(!((MyString)field.type).isEmpty())
                 {
-                    paras.append("MyString ").append(field.properties.get("FieldCode")).append(", ");
+                    paras.append("String ").append(field.properties.get("FieldCode")).append(", ");
                 }
         }
         paras.delete(paras.length()-2, paras.length());
-        System.out.println(paras);
         analog.generateConstructor(model.properties.get("EntityCode"), paras.toString());
     }
 
@@ -169,7 +233,7 @@ public class CodeGenerator
                 }
             }
             //if not found, generate no constructor field.
-            if(!found)analog.createFieldWithoutConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"));
+            if(!found && !(field.type instanceof HashMap))analog.createFieldWithoutConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"));
             analog.generateFieldDescription(field.properties.get("FieldName"));
             analog.newLine();
         }

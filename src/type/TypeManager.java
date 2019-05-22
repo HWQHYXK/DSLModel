@@ -58,7 +58,6 @@ public class TypeManager
     {
         try
         {
-            System.out.println(s);
 
             Class class0 = typeHashMap.get(s);
 

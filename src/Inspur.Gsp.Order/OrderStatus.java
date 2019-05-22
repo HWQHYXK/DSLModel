@@ -1,10 +1,12 @@
-package test;
+// ¶©µ¥×´Ì¬
 
-public enum OderStatus
+package Inspur.Gsp.Order;
+
+public enum OrderStatus
 {
-    Creating(0),Created(1);
+    Creating(0), Created(1);
     private int value;
-    OderStatus(int value)
+    OrderStatus(int value)
     {
         this.value = value;
     }
