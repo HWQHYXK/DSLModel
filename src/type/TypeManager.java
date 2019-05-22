@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class TypeManager
 {
-    private static HashMap<String,Class> typeHashMap;
+    private HashMap<String,Class> typeHashMap;
     public TypeManager()
     {
         typeHashMap = new HashMap<>();
@@ -29,43 +29,32 @@ public class TypeManager
 
         }
     }
-    public static Object createType(String s)
+    public Object createType(String s)
     {
+        System.out.println(s);
+
+        Object ret = null;
+        Class class0 = typeHashMap.get(s);
         try
         {
-            System.out.println(s);
+            ret = class0.newInstance();
+        }
+        catch (InstantiationException | IllegalAccessException e) { }
 
-            Class class0 = typeHashMap.get(s);
-            if (Class.forName("java.lang.Number") == class0.getSuperclass())
+        if(ret == null)
+        {
+            try
             {
                 Constructor constructor0 = class0.getConstructor(new String().getClass());
-                return constructor0.newInstance("0");
+                ret = constructor0.newInstance("0");
             }
-            return class0.newInstance();
+            catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) { }
         }
-        catch (NoSuchMethodException e)
-        {
 
-        }
-        catch (ClassNotFoundException e)
-        {
-
-        }
-        catch (IllegalAccessException e)
-        {
-
-        }
-        catch (InstantiationException e)
-        {
-
-        }
-        catch (InvocationTargetException e)
-        {
-
-        }
-        return null;
+        return ret;
     }
-    public static <T> Object createType(String s,T... parameter)
+
+    public <T> Object createType(String s,T... parameter)
     {
         try
         {

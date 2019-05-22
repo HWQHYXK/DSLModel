@@ -14,7 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 public class XMLParser
 {
     TypeManager typeManager = new TypeManager();
-    static Entity buildEntity(String url)
+    public Entity buildEntity(String url)
     {
         Entity entity = new Entity();
         try
@@ -41,7 +41,7 @@ public class XMLParser
         return null;
     }
 
-    private static void updateEntity(Element root,Entity entity)
+    private void updateEntity(Element root,Entity entity)
     {
         NodeList nodes = root.getChildNodes();
         for(int i = 0;i < nodes.getLength();i++)
@@ -81,7 +81,7 @@ public class XMLParser
         }
     }
 
-    private static void updateField(Element root,Field field)
+    private void updateField(Element root,Field field)
     {
         NodeList nodes = root.getChildNodes();
 
@@ -95,7 +95,7 @@ public class XMLParser
             if(x.getNodeName().equals("FieldType"))
             {
                 String content = x.getFirstChild().getNodeValue();
-                field.type = TypeManager.createType(content);
+                field.type = typeManager.createType(content);
             }
         }
 
@@ -123,7 +123,7 @@ public class XMLParser
         }
     }
 
-    private static void updateType(Element root,Object type)
+    private void updateType(Element root,Object type)
     {
         Class class0 = type.getClass();
         NodeList nodes = root.getChildNodes();
@@ -139,13 +139,13 @@ public class XMLParser
                 String name = x.getNodeName();
                 String content = x.getFirstChild().getNodeValue();
 
-                if(name == "IsEnum" && content == "true")
+                if(name.equals("IsEnum") && content.equals("true"))
                 {
                     //因为要 break 所以这里重复使用前面的变量没有问题
-                    child0 = nodes.item(i);
                     HashMap<Integer,String> Enum=new HashMap<>();
                     for(i = 0;i < nodes.getLength();i++)
                     {
+                        child0 = nodes.item(i);
                         if (!(child0 instanceof Element)) continue;
 
                         x = (Element) child0;
@@ -163,27 +163,26 @@ public class XMLParser
                                 if(y.getNodeName() == "Key")
                                     Key = Integer.parseInt(y.getFirstChild().getNodeValue());
                                 else Value = y.getFirstChild().getNodeValue();
-
-                                if(Key != -1 && !Value.isEmpty())
-                                    Enum.put(Key,Value);
                             }
+                            if(Key != -1 && !Value.isEmpty())
+                                Enum.put(Key,Value);
                         }
                     }
                     type = Enum;
                     break;
                 }
 
-                if(name == "Int16" && content == "true")
+                if(name.equals("Int16") && content.equals("true"))
                 {
                     type = new Short("0");
                     break;
                 }
-                if(name == "Int32" && content == "true")
+                if(name.equals("Int32") && content.equals("true"))
                 {
                     type = new Integer("0");
                     break;
                 }
-                if(name == "Int64" && content == "true")
+                if(name.equals("Int64") && content.equals("true"))
                 {
                     type = new Long("0");
                     break;
