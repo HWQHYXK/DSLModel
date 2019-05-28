@@ -9,12 +9,18 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class OrderDao
 {
-    private static String sql = "CREATE TABLE GspOrder(ID VARCHAR(36) NOT NULL , Code VARCHAR(50) NOT NULL , Name VARCHAR(50) NOT NULL , Price DOUBLE(8, 2), OrderCount INT, OrderAmount DOUBLE(8, 2), Status INT, IsVip BOOL, Date DATETIME)ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+    private static ArrayList<String> sqls;
+    private static void init()
+    {
+        sqls.add("CREATE TABLE GspOrder(ID VARCHAR(36) NOT NULL , Code VARCHAR(50) NOT NULL , Name VARCHAR(50) NOT NULL , Price DOUBLE(8, 2), OrderCount INT, OrderAmount DOUBLE(8, 2), Status INT, IsVip BOOL, Date DATETIME)ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+    }
     public static void main(String[] args) throws Exception
     {
+        init();
         Class.forName("com.mysql.jdbc.Driver");
         System.out.println("Driver Load Properly!");
 
@@ -29,13 +35,17 @@ public class OrderDao
             System.out.println("Database Connected!");
 
             statement = connection.createStatement();
-            resultSet = statement.executeQuery(sql);
+            for(String sql:sqls)
+            {
+                resultSet = statement.executeQuery(sql);
 
-            resultSet.beforeFirst();
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString(1));
+                resultSet.beforeFirst();
+                while (resultSet.next())
+                {
+                    System.out.println(resultSet.getString(1));
+                }
+                System.out.println("Valid Operation!");
             }
-            System.out.println("Valid Operation!");
         } catch(Throwable t)
         {
             // TODO Handle Exception

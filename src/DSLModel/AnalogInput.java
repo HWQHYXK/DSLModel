@@ -121,6 +121,7 @@ public class AnalogInput
         {
             writer.write("public static void main(String[] args) throws Exception\r\n" +
                     "    {\r\n" +
+                    "        init();\r\n" +
                     "        Class.forName(\"com.mysql.jdbc.Driver\");\r\n" +
                     "        System.out.println(\"Driver Load Properly!\");\r\n" +
                     "\r\n" +
@@ -135,13 +136,17 @@ public class AnalogInput
                     "            System.out.println(\"Database Connected!\");\r\n" +
                     "\r\n" +
                     "            statement = connection.createStatement();\r\n" +
-                    "            resultSet = statement.executeQuery(sql);\r\n" +
+                    "            for(String sql:sqls)\r\n" +
+                    "            {\r\n" +
+                    "                resultSet = statement.executeQuery(sql);\r\n" +
                     "\r\n" +
-                    "            resultSet.beforeFirst();\r\n" +
-                    "            while (resultSet.next()) {\r\n" +
-                    "                System.out.println(resultSet.getString(1));\r\n" +
+                    "                resultSet.beforeFirst();\r\n" +
+                    "                while (resultSet.next())\r\n" +
+                    "                {\r\n" +
+                    "                    System.out.println(resultSet.getString(1));\r\n" +
+                    "                }\r\n" +
+                    "                System.out.println(\"Valid Operation!\");\r\n" +
                     "            }\r\n" +
-                    "            System.out.println("+"\"Valid Operation!"+"\");\r\n" +
                     "        } catch(Throwable t)\r\n" +
                     "        {\r\n" +
                     "            // TODO Handle Exception\r\n" +
@@ -155,9 +160,8 @@ public class AnalogInput
                     "            if (connection != null)\r\n" +
                     "                connection.close();\r\n" +
                     "            System.out.println(\"Close Properly!\");\r\n" +
-                    "        }\r\n" +
-                    "    }");
-            lineNum+=37;
+                    "        }");
+            lineNum+=41;
         }catch (IOException e)
         {
             throw new CodeGenerateException(lineNum);
@@ -201,11 +205,20 @@ public class AnalogInput
         }
     }
 
-    public void createStaticSqlConstructor(String sql) throws CodeGenerateException
+    public void generateDaoInitMethod(String sql) throws CodeGenerateException
     {
         try
         {
-            writer.write("private static String sql = "+"\""+ sql +"\";");
+            writer.write("private static ArrayList<String> sqls;");
+            newLine();
+            writer.write("private static void init()");
+            newLine();
+            leftBrace();
+            writer.newLine();
+            addIndent();
+            revertIndent();
+            newLine();
+            rightBrace();
         }catch (IOException e)
         {
             throw new CodeGenerateException(lineNum);
