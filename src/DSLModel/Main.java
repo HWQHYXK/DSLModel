@@ -11,12 +11,12 @@ public class Main
     public static void main(String[] args)
     {
         XMLParser xmlParser = new XMLParser();
-        Entity entities[] = xmlParser.getEntities("in/order.xml");
+        Entity entity = xmlParser.getRootEntity("in/order.xml");
 
         System.out.print("Input Your Root Dir:");
         Scanner scanner = new Scanner(System.in);
         codeGenerator = new CodeGenerator(new File(scanner.next()));
-        //dfs(entity);
+        dfs(entity);
         codeGenerator.generateDaoCode();//generateDaoCode after all done!
     }
     private static void dfs(Entity entity)

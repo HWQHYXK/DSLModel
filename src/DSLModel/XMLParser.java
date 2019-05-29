@@ -2,9 +2,7 @@ package DSLModel;
 
 import org.w3c.dom.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import org.xml.sax.SAXException;
 import type.TypeManager;
@@ -17,9 +15,9 @@ public class XMLParser
 {
     TypeManager typeManager = new TypeManager();
     HashMap<String, Object> hashMap = new HashMap<>();
-    public Entity[] getEntities(String url)
+    HashMap<String, Entity> entityHashMap = new HashMap<>();
+    public Entity getRootEntity(String url)
     {
-        ArrayList<Entity> entities = new ArrayList<>();
         try
         {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -36,19 +34,23 @@ public class XMLParser
                 Element x = (Element) child0;
                 if(!x.getNodeName().equals("Entity")) continue;
 
-                entities.add(new Entity());
-                updateEntity(x,entities.get(entities.size()-1));
+                Entity entity = new Entity();
+                updateEntity(x,entity);
 
-                String code = entities.get(entities.size()-1).properties.get("EntityCode");
+                String code = entity.properties.get("EntityCode");
                 if(hashMap.containsKey(code))
                 {
                     Object object = hashMap.get(code);
                     if(object instanceof Field)
-                        ((Field) object).type = entities.get(entities.size()-1);
+                        ((Field) object).type = entity;
                     else if(object instanceof List)
-                        ((List) object).add(entities.get(entities.size()-1));
+                        ((List) object).add(entity);
                 }
+
+                entityHashMap.put(code,entity);
             }
+
+            return getRoot();
         }
         catch (ParserConfigurationException e)
         {
@@ -62,8 +64,34 @@ public class XMLParser
         {
 
         }
-        Entity[] array = new Entity[entities.size()];
-        return entities.toArray(array);
+
+        return null;
+    }
+
+    private Entity getRoot()
+    {
+        Set<Entity> hasParent = new LinkedHashSet<>();
+        for(Entity entity : entityHashMap.values())
+        {
+            for(Field field : entity.fields)
+            {
+                if(field.type instanceof Entity)
+                    hasParent.add((Entity) field.type);
+                if(field.type instanceof List)
+                    hasParent.add((Entity) ((List) field.type).get(0));
+            }
+        }
+
+        Entity ret = null;
+        for(Entity entity : entityHashMap.values())
+        {
+            if(hasParent.contains(entity)) continue;
+
+            if(ret == null)  ret = entity;
+            else throw new RuntimeException();
+        }
+        if(ret == null) throw new RuntimeException();
+        return ret;
     }
 
     private void updateEntity(Element root,Entity entity)
@@ -226,11 +254,15 @@ public class XMLParser
                 String content = x.getFirstChild().getNodeValue();
                 if(field.type == null)
                 {
-                    hashMap.put(content,field);
+                    if(entityHashMap.containsKey(content))
+                        field.type = entityHashMap.get(content);
+                    else hashMap.put(content,field);
                 }
-                else
+                else if (field.type instanceof List)
                 {
-                    hashMap.put(content,field.type);
+                    if(entityHashMap.containsKey(content))
+                        ((List) field.type).add(entityHashMap.get(content));
+                    else hashMap.put(content,field.type);
                 }
             }
         }
