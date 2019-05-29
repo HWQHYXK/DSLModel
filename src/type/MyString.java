@@ -1,6 +1,5 @@
 package type;
 
-
 public class MyString
 {
     private String value;

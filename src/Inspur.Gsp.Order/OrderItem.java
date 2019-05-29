@@ -1,6 +1,6 @@
 /*
-* EntityName: ÏúÊÛ¶©µ¥Ã÷Ï¸
-* EntityDescription: ÏúÊÛ¶©µ¥Ã÷Ï¸Ä£ĞÍ
+* EntityName: é”€å”®è®¢å•æ˜ç»†
+* EntityDescription: é”€å”®è®¢å•æ˜ç»†æ¨¡å‹
 * */
 
 package Inspur.Gsp.Order;
@@ -9,16 +9,16 @@ import type.MyString;
 
 public class OrderItem
 {
-    private static final String EntityName = "ÏúÊÛ¶©µ¥Ã÷Ï¸";
+    private static final String EntityName = "é”€å”®è®¢å•æ˜ç»†";
     private static final String EntityCode = "OrderItem";
-    private static final String EntityDescription = "ÏúÊÛ¶©µ¥Ã÷Ï¸Ä£ĞÍ";
+    private static final String EntityDescription = "é”€å”®è®¢å•æ˜ç»†æ¨¡å‹";
     private static final String EntityNameSpace = "Inspur.Gsp.Order";
     private static final String EntityTableCode = "GspOrderItem";
     
-    public MyString ID = new MyString(36, 36);// ÄÚÂë
-    public MyString OrderId = new MyString(36, 36);// ËùÊôÏúÊÛ¶©µ¥ÄÚÂë
-    public MyString ProductCode = new MyString(50, 1);// ²úÆ·±àºÅ
-    public MyString ProductName = new MyString(50, 1);// ²úÆ·Ãû³Æ
+    public MyString ID = new MyString(36, 36);// å†…ç 
+    public MyString OrderId = new MyString(36, 36);// æ‰€å±é”€å”®è®¢å•å†…ç 
+    public MyString ProductCode = new MyString(50, 1);// äº§å“ç¼–å·
+    public MyString ProductName = new MyString(50, 1);// äº§å“åç§°
     
     public OrderItem(String ID, String OrderId, String ProductCode, String ProductName)
     {

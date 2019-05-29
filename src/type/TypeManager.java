@@ -36,7 +36,7 @@ public class TypeManager
     }
     public Object createType(String s)
     {
-        System.out.println(s);
+        //System.out.println(s);
 
         //去除<>中的内容 统一以泛型代替返回
 
@@ -96,7 +96,6 @@ public class TypeManager
     {
         try
         {
-
             Class class0 = typeHashMap.get(s);
 
             Class classes[] = new Class[parameter.length];
