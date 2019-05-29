@@ -1,6 +1,6 @@
 /*
-* EntityName: 销售订单
-* EntityDescription: 销售订单模型
+* EntityName: 销售订单明细
+* EntityDescription: 销售订单明细模型
 * */
 
 package Inspur.Gsp.Order;
@@ -11,11 +11,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class OrderDao
+public class OrderItemDao
 {
     private static ArrayList<String> sqls = new ArrayList<>();
     
-    public OrderDao() throws Exception
+    public OrderItemDao() throws Exception
     {
         init();
         Class.forName("com.mysql.jdbc.Driver");
@@ -104,32 +104,33 @@ public class OrderDao
     private void init()
     {
         sqls.add("CREATE TABLE IF NOT EXISTS GspOrder(ID VARCHAR(36) NOT NULL , Code VARCHAR(50) NOT NULL , Name VARCHAR(50) NOT NULL , Price DOUBLE(8, 2), OrderCount INT, OrderAmount DOUBLE(8, 2), Status INT, IsVip BOOL, CreateTime DATETIME)ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        sqls.add("CREATE TABLE IF NOT EXISTS GspOrderItem(ID VARCHAR(36) NOT NULL , OrderId VARCHAR(36) NOT NULL , ProductCode VARCHAR(50) NOT NULL , ProductName VARCHAR(50) NOT NULL , Father VARCHAR(100), CONSTRAINT father_fk FOREIGN KEY (Fahter) REFERENCES GspOrder(ID))ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         
     }
     
-    public void insertOne(String ID, String Code, String Name) throws Exception
+    public void insertOne(String ID, String OrderId, String ProductCode, String ProductName) throws Exception
     {
-        String insertSQL = "INSERT INTO GspOrder (ID, Code, Name) VALUES ";
+        String insertSQL = "INSERT INTO GspOrderItem (ID, OrderId, ProductCode, ProductName) VALUES ";
         StringBuilder builder = new StringBuilder(insertSQL);
-        builder.append("("+"\""+ID+"\", "+"\""+Code+"\", "+"\""+Name+"\","+");");
+        builder.append("("+"\""+ID+"\", "+"\""+OrderId+"\", "+"\""+ProductCode+"\", "+"\""+ProductName+"\","+");");
         handleSQL(builder.toString());
     }
     
     public void select(String queryField, String field, String value) throws Exception
     {
-        String selectSQL = "SELECT * FROM GspOrder WHERE "+field+"="+value+";";
+        String selectSQL = "SELECT * FROM GspOrderItem WHERE "+field+"="+value+";";
         handleSQL(selectSQL, queryField);
     }
     
     public void updateOne(String queryField, String queryValue, String field, String value) throws Exception
     {
-        String updateSQL = "UPDATE GspOrder SET "+queryField+"="+queryValue+"WHERE "+field+"="+value+";";
+        String updateSQL = "UPDATE GspOrderItem SET "+queryField+"="+queryValue+"WHERE "+field+"="+value+";";
         handleSQL(updateSQL);
     }
     
     public void delete(String field, String value) throws Exception
     {
-        String deleteSQL = "DELETE FROM GspOrder WHERE "+field+"="+value+";";
+        String deleteSQL = "DELETE FROM GspOrderItem WHERE "+field+"="+value+";";
         handleSQL(deleteSQL);
     }
 }

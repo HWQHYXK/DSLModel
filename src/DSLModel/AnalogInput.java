@@ -115,11 +115,14 @@ public class AnalogInput
         }
     }
 
-    public void createDaoMainBody() throws CodeGenerateException
+    public void createDaoMainBody(String className) throws CodeGenerateException
     {
         try
         {
-            writer.write("public OrderDao() throws Exception\r\n" +
+            writer.write("private static ArrayList<String> sqls = new ArrayList<>();");
+            newLine();
+            newLine();
+            writer.write("public "+className+"() throws Exception\r\n" +
                     "    {\r\n" +
                     "        init();\r\n" +
                     "        Class.forName(\"com.mysql.jdbc.Driver\");\r\n" +
@@ -292,7 +295,7 @@ public class AnalogInput
                 anotherBuilder.append(fieldName).append(", ");
             }
             anotherBuilder.delete(anotherBuilder.length()-2, anotherBuilder.length());
-            writer.write("String insertSQL = \"INSERT INTO "+tableName+" ("+anotherBuilder.toString()+") VALUES ");
+            writer.write("String insertSQL = \"INSERT INTO "+tableName+" ("+anotherBuilder.toString()+") VALUES \";");
             newLine();
             writer.write("StringBuilder builder = new StringBuilder(insertSQL);");
             newLine();

@@ -151,7 +151,7 @@ public class CodeGenerator
         analog.leftBrace();
         analog.newLine();
         analog.addIndent();
-        analog.createDaoMainBody();
+        analog.createDaoMainBody(model.properties.get("EntityCode")+"Dao");
         analog.newLine();
         analog.newLine();
         analog.generateDaoInitMethod(createTableStatements);
@@ -195,7 +195,8 @@ public class CodeGenerator
         {
             //refuse to handle ArrayList<Entity> or Entity object
             if((field.type instanceof ArrayList
-                    &&((ParameterizedType)field.type.getClass().getGenericSuperclass()).getActualTypeArguments()[0].equals(Entity.class))
+                    && !((ArrayList) field.type).isEmpty()
+                    &&((ArrayList)field.type).get(0) instanceof Entity)
                     ||field.type instanceof Entity)
             {
                 continue;
@@ -230,9 +231,7 @@ public class CodeGenerator
         for(Field field : model.fields)
         {
             //test if type equals to HashMap<Integer, String>
-            if(!(field.type instanceof HashMap
-                    &&((ParameterizedType)field.type.getClass().getGenericSuperclass()).getActualTypeArguments()[0].equals(Integer.class))
-                    &&((ParameterizedType)field.type.getClass().getGenericSuperclass()).getActualTypeArguments()[1].equals(String.class))
+            if(!(field.type instanceof HashMap))
                 bufferSets.add(field.type.getClass());
         }
         for(Class class_ : bufferSets)
@@ -272,44 +271,52 @@ public class CodeGenerator
             }
             //if type equals ArrayList, then generate no parameters ArrayList constructor
             else if(field.type instanceof ArrayList
-                    &&((ParameterizedType)field.type.getClass().getGenericSuperclass()).getActualTypeArguments()[0].equals(Entity.class))
+                    && !((ArrayList) field.type).isEmpty()
+                    &&((ArrayList)field.type).get(0) instanceof Entity)
             {
-                analog.createFieldWithConstructor("List<"+((ArrayList<Entity>) field.type).get(0).properties.get("EntityCode")+">", field.properties.get("FieldCode"), "");
+                analog.createFieldWithConstructor("ArrayList<"+((ArrayList<Entity>) field.type).get(0).properties.get("EntityCode")+">", field.properties.get("FieldCode"), "");
+            }
+            else if(field.type instanceof Entity)
+            {
+                analog.createFieldWithConstructor(((Entity)field.type).properties.get("EntityCode"), field.properties.get("FieldCode"), "");
             }
             /*customized user Class, use Java Reflect mechanism*/
-            else for(Constructor constructor:field.type.getClass().getConstructors())
+            else
             {
-                if(constructor.getAnnotation(ConstructorToUse.class)!=null)
+                for (Constructor constructor : field.type.getClass().getConstructors())
                 {
-                    found = true;
-                    ConstructorToUse annotation = (ConstructorToUse) constructor.getAnnotation(ConstructorToUse.class);
-                    if(((ConstructorToUse)constructor.getAnnotation(ConstructorToUse.class)).doConstruct())//if field needs to construct itself.
+                    if (constructor.getAnnotation(ConstructorToUse.class) != null)
                     {
-                        StringBuilder paras = new StringBuilder();
-                        for(String para:annotation.initializedVariable())
+                        found = true;
+                        ConstructorToUse annotation = (ConstructorToUse) constructor.getAnnotation(ConstructorToUse.class);
+                        if (((ConstructorToUse) constructor.getAnnotation(ConstructorToUse.class)).doConstruct())//if field needs to construct itself.
                         {
-                            try
+                            StringBuilder paras = new StringBuilder();
+                            for (String para : annotation.initializedVariable())
                             {
-                                java.lang.reflect.Field field_ = field.type.getClass().getDeclaredField(para);
-                                field_.setAccessible(true);
-                                paras.append(field_.get(field.type).toString()).append(", ");
-                            } catch (IllegalAccessException | NoSuchFieldException e)
-                            {
-                                e.printStackTrace();
+                                try
+                                {
+                                    java.lang.reflect.Field field_ = field.type.getClass().getDeclaredField(para);
+                                    field_.setAccessible(true);
+                                    paras.append(field_.get(field.type).toString()).append(", ");
+                                } catch (IllegalAccessException | NoSuchFieldException e)
+                                {
+                                    e.printStackTrace();
+                                }
                             }
+                            paras.delete(paras.length() - 2, paras.length());
+                            analog.createFieldWithConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"), paras.toString());
+                        } else//no need to construct
+                        {
+                            analog.createFieldWithoutConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"));
                         }
-                        paras.delete(paras.length()-2,paras.length());
-                        analog.createFieldWithConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"), paras.toString());
+                        break;
                     }
-                    else//no need to construct
-                    {
-                        analog.createFieldWithoutConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"));
-                    }
-                    break;
                 }
+                //if not found, generate no constructor field.
+                if (!found)
+                    analog.createFieldWithoutConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"));
             }
-            //if not found, generate no constructor field.
-            if(!found && !(field.type instanceof HashMap))analog.createFieldWithoutConstructor(field.type.getClass().getSimpleName(), field.properties.get("FieldCode"));
             analog.generateFieldDescription(field.properties.get("FieldName"));
             analog.newLine();
         }
