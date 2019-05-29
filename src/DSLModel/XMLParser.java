@@ -62,7 +62,8 @@ public class XMLParser
         {
 
         }
-        return (Entity[]) entities.toArray();
+        Entity[] array = new Entity[entities.size()];
+        return entities.toArray(array);
     }
 
     private void updateEntity(Element root,Entity entity)
