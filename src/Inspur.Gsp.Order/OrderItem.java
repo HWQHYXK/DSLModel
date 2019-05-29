@@ -9,6 +9,12 @@ import type.MyString;
 
 public class OrderItem
 {
+    private static final String EntityName = "销售订单明细";
+    private static final String EntityCode = "OrderItem";
+    private static final String EntityDescription = "销售订单明细模型";
+    private static final String EntityNameSpace = "Inspur.Gsp.Order";
+    private static final String EntityTableCode = "GspOrderItem";
+    
     public MyString ID = new MyString(36, 36);// 内码
     public MyString OrderId = new MyString(36, 36);// 所属销售订单内码
     public MyString ProductCode = new MyString(50, 1);// 产品编号

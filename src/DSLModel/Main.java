@@ -1,25 +1,40 @@
 package DSLModel;
 
 import java.io.File;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main
 {
-    private static CodeGenerator codeGenerator;
+    private CodeGenerator codeGenerator;
+    private XMLParser xmlParser;
     public static void main(String[] args)
     {
+        Main main = new Main();
+        main.addUserDefinedMAP("DemoType", type.DemoType.class, "VARCHAR(10)");
+        main.work();
+    }
+    public Main()
+    {
+        xmlParser = new XMLParser();
+        codeGenerator = new CodeGenerator();
+    }
+    public void work()
+    {
         Scanner scanner = new Scanner(System.in);
-        XMLParser xmlParser = new XMLParser();
         System.out.print("Input Your Input File:");
         Entity entity = xmlParser.getRootEntity(scanner.next());
 
         System.out.print("Input Your Root Dir:");
-        codeGenerator = new CodeGenerator(new File(scanner.next()));
+        codeGenerator.setOutputDir(new File(scanner.next()));
         dfs(entity);
     }
-    private static void dfs(Entity entity)
+    public void addUserDefinedMAP(String typeNameInXML, Class classNameInJava, String typeNameInSQL)
+    {
+        xmlParser.typeManager.addUserDefinedClassMap(typeNameInXML, classNameInJava);
+        codeGenerator.addSQLMap(classNameInJava, typeNameInSQL);
+    }
+    private void dfs(Entity entity)
     {
         codeGenerator.setSource(entity);
         codeGenerator.addTable();

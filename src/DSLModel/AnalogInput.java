@@ -54,6 +54,21 @@ public class AnalogInput
         }
     }
 
+    public void generatePrivateProperties(String property, String value) throws CodeGenerateException
+    {
+        /*
+         * EntityName:
+         * EntityDescription:
+         * */
+        try
+        {
+            writer.write("private static final String "+property+" = \""+value+"\";");
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
     public void generatePackage(String namespace) throws CodeGenerateException
     {
         try
@@ -308,7 +323,6 @@ public class AnalogInput
             }
             thirdBuilder.delete(thirdBuilder.length()-3, thirdBuilder.length());
             thirdBuilder.append("\"");
-            System.out.println(thirdBuilder);
             writer.write("builder.append(\"(\"+"+thirdBuilder.toString()+"+\");\");");
             newLine();
             writer.write("handleSQL(builder.toString());");

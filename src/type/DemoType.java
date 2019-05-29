@@ -6,7 +6,7 @@ public class DemoType
     private int number2;
     public String equation1;
     public String equation2;
-    public DemoType()
+    private DemoType()
     {
         equation1 = "1+1=2";
         equation2 = "1-1=0";

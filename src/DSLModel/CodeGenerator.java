@@ -35,6 +35,11 @@ public class CodeGenerator
         sqlMap.put(ArrayList.class, "VARCHAR(100)");
     }
 
+    public CodeGenerator()
+    {
+        sqlMapInit();
+    }
+
     public CodeGenerator(File outputDir)
     {
         sqlMapInit();
@@ -47,6 +52,12 @@ public class CodeGenerator
         sqlMapInit();
         this.model = model;
         this.outputDir = outputDir;
+        checkDirectory();
+    }
+
+    public void setOutputDir(File dir)
+    {
+        this.outputDir = dir;
         checkDirectory();
     }
 
@@ -83,9 +94,13 @@ public class CodeGenerator
         this.model = model;
     }
 
-    public void setSqlMap(HashMap<Class, String> map)
+    public void setSQLMap(HashMap<Class, String> map)
     {
         this.sqlMap = map;
+    }
+    public void addSQLMap(Class JavaClass, String SQLType)
+    {
+        sqlMap.put(JavaClass, SQLType);
     }
 
     private void createMainClass() throws CodeGenerateException
@@ -103,6 +118,8 @@ public class CodeGenerator
         analog.leftBrace();// {
         analog.newLine();// Enter
         analog.addIndent();// Tab
+        generateProperties();
+        analog.newLine();
         generateFields();// generate fields
         analog.newLine();
         generateConstructor();// generate Constructor
@@ -201,6 +218,7 @@ public class CodeGenerator
             {
                 continue;
             }
+            System.out.println(field.type.getClass());
             sql.append(field.properties.get("FieldCode")).append(" ").append(sqlMap.get(field.type.getClass()));
             if(field.type instanceof MyString)
             {
@@ -256,6 +274,15 @@ public class CodeGenerator
         }
         paras.delete(paras.length()-2, paras.length());
         analog.generateConstructor(model.properties.get("EntityCode"), paras.toString());
+    }
+
+    private void generateProperties() throws CodeGenerateException
+    {
+        for(String key:model.properties.keySet())
+        {
+            analog.generatePrivateProperties(key, model.properties.get(key));
+            analog.newLine();
+        }
     }
 
     private void generateFields() throws CodeGenerateException

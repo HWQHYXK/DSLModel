@@ -103,7 +103,7 @@ public class OrderItemDao
     
     private void init()
     {
-        sqls.add("CREATE TABLE IF NOT EXISTS GspOrder(ID VARCHAR(36) NOT NULL , Code VARCHAR(50) NOT NULL , Name VARCHAR(50) NOT NULL , Price DOUBLE(8, 2), OrderCount INT, OrderAmount DOUBLE(8, 2), Status INT, IsVip BOOL, CreateTime DATETIME)ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        sqls.add("CREATE TABLE IF NOT EXISTS GspOrder(ID VARCHAR(36) NOT NULL , Code VARCHAR(50) NOT NULL , Name VARCHAR(50) NOT NULL , Price DOUBLE(8, 2), OrderCount INT, OrderAmount DOUBLE(8, 2), Status INT, IsVip BOOL, CreateTime DATETIME, Demo VARCHAR(10))ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         sqls.add("CREATE TABLE IF NOT EXISTS GspOrderItem(ID VARCHAR(36) NOT NULL , OrderId VARCHAR(36) NOT NULL , ProductCode VARCHAR(50) NOT NULL , ProductName VARCHAR(50) NOT NULL , Father VARCHAR(100), CONSTRAINT father_fk FOREIGN KEY (Fahter) REFERENCES GspOrder(ID))ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         
     }
