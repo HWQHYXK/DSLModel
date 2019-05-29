@@ -87,15 +87,6 @@
         <FieldType>DateTime</FieldType>
       </EntityField>
       <EntityField>
-        <FieldCode>Demo</FieldCode>
-        <FieldName>字母</FieldName>
-        <FieldType>DemoType</FieldType>
-        <FieldConstraint>
-          <number1>5</number1>
-          <number2>6</number2>
-        </FieldConstraint>
-      </EntityField>
-      <EntityField>
         <FieldCode>OrderItems</FieldCode>
         <FieldName>订单明细项</FieldName>
         <FieldType>List&lt;T&gt;</FieldType>
