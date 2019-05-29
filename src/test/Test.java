@@ -18,9 +18,8 @@ public class Test
     public static void main(String[] args) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException
     {
 //        Order order = new Order("123456");
-        Boolean b = new Boolean("0");
-        System.out.println(b);
-        System.out.println(hwq.hh.getValue()+hwq.www.getValue());
+//        System.out.println(b);
+//        System.out.println(hwq.hh.getValue()+hwq.www.getValue());
 //        AnalogInput analog = new AnalogInput(new File("hello.java"));
 //        analog.importClass(CommonType.class);
 //        analog.newLine();
