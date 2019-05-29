@@ -17,8 +17,10 @@ public class CodeGenerator
     private File outputDir;
     private Entity model;
     private AnalogInput analog;
+    private ArrayList<String> createTableStatements = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
     private static HashMap<Class, String>sqlMap = new HashMap<>();
+    public Stack<Entity> entityTree = new Stack<>();
 
     private static void sqlMapInit()
     {
@@ -30,6 +32,7 @@ public class CodeGenerator
         sqlMap.put(Boolean.class, "BOOL");
         sqlMap.put(MyString.class, "VARCHAR");
         sqlMap.put(Date.class, "DATETIME");
+        sqlMap.put(ArrayList.class, "VARCHAR(100)");
     }
 
     public CodeGenerator(File outputDir)
@@ -124,7 +127,6 @@ public class CodeGenerator
 
     private void createDaoClass() throws CodeGenerateException
     {
-        StringBuilder sql = new StringBuilder();
 
         /*process head part*/
         analog.generateDescription(model.properties.get("EntityName"), model.properties.get("EntityDescription"));
@@ -149,11 +151,55 @@ public class CodeGenerator
         analog.leftBrace();
         analog.newLine();
         analog.addIndent();
-
-        /*process sql statement*/
-        sql.append("CREATE TABLE ").append(model.properties.get("EntityTableCode")).append("(");
+        analog.createDaoMainBody();
+        analog.newLine();
+        analog.newLine();
+        analog.generateDaoInitMethod(createTableStatements);
+        analog.newLine();
+        analog.newLine();
+        String tableName = model.properties.get("EntityTableCode");
+        ArrayList<String> fieldNames = new ArrayList<>();
         for(Field field:model.fields)
         {
+            //compulsory parameters
+            if (field.type instanceof MyString&&!((MyString) field.type).isEmpty())
+            {
+                fieldNames.add(field.properties.get("FieldCode"));
+            }
+        }
+        analog.generateDaoInsertMethod(tableName, fieldNames);
+        analog.newLine();
+        analog.newLine();
+        analog.generateDaoSelectMethod(tableName);
+        analog.newLine();
+        analog.newLine();
+        analog.generateDaoUpdateMethod(tableName);
+        analog.newLine();
+        analog.newLine();
+        analog.generateDaoDeleteMethod(tableName);
+        analog.revertIndent();
+        analog.newLine();
+        analog.rightBrace();
+        analog.end();
+    }
+
+    public void addTable()
+    {
+        Entity father;
+        if(!entityTree.empty()) father = entityTree.pop();
+        else father = null;
+        StringBuilder sql = new StringBuilder();
+        /*process sql statement*/
+        sql.append("CREATE TABLE IF NOT EXISTS ").append(model.properties.get("EntityTableCode")).append("(");
+        for(Field field:model.fields)
+        {
+            //refuse to handle ArrayList<Entity> or Entity object
+            if((field.type instanceof ArrayList
+                    &&((ParameterizedType)field.type.getClass().getGenericSuperclass()).getActualTypeArguments()[0].equals(Entity.class))
+                    ||field.type instanceof Entity)
+            {
+                continue;
+            }
             sql.append(field.properties.get("FieldCode")).append(" ").append(sqlMap.get(field.type.getClass()));
             if(field.type instanceof MyString)
             {
@@ -166,15 +212,16 @@ public class CodeGenerator
             }
             sql.append(", ");
         }
-        sql.delete(sql.length()-2,sql.length());
+        if(father!=null)
+        {
+            sql.append("Father VARCHAR(100), ");
+            sql.append("CONSTRAINT father_fk FOREIGN KEY (Fahter) REFERENCES ").append(father.properties.get("EntityTableCode")).append("(ID)");
+
+        }
+        else
+            sql.delete(sql.length()-2,sql.length());
         sql.append(")ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-        analog.generateDaoInitMethod(sql.toString());
-        analog.newLine();
-        analog.createDaoMain();
-        analog.revertIndent();
-        analog.newLine();
-        analog.rightBrace();
-        analog.end();
+        createTableStatements.add(sql.toString());
     }
 
     private void extractClasses() throws CodeGenerateException

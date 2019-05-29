@@ -22,6 +22,7 @@ public class Main
     private static void dfs(Entity entity)
     {
         codeGenerator.setSource(entity);
+        codeGenerator.addTable();
         codeGenerator.generateMainCode();
         for(Field field:entity.fields)
         {
@@ -29,10 +30,9 @@ public class Main
             if(field.type instanceof ArrayList
                     &&((ParameterizedType)field.type.getClass().getGenericSuperclass()).getActualTypeArguments()[0].equals(Entity.class))
             {
-                for(Entity entityInList:(ArrayList<Entity>)field.type)
-                {
-                    dfs(entityInList);
-                }
+                //push entityInList's father which is also entity into the stack
+                codeGenerator.entityTree.push(entity);
+                dfs(((ArrayList<Entity>) field.type).get(0));
             }
         }
     }

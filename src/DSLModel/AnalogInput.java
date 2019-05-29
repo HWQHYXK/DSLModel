@@ -115,11 +115,11 @@ public class AnalogInput
         }
     }
 
-    public void createDaoMain() throws CodeGenerateException
+    public void createDaoMainBody() throws CodeGenerateException
     {
         try
         {
-            writer.write("public static void main(String[] args) throws Exception\r\n" +
+            writer.write("public OrderDao() throws Exception\r\n" +
                     "    {\r\n" +
                     "        init();\r\n" +
                     "        Class.forName(\"com.mysql.jdbc.Driver\");\r\n" +
@@ -160,8 +160,51 @@ public class AnalogInput
                     "            if (connection != null)\r\n" +
                     "                connection.close();\r\n" +
                     "            System.out.println(\"Close Properly!\");\r\n" +
-                    "        }");
-            lineNum+=41;
+                    "        }\r\n" +
+                    "    }\r\n" +
+                    "\r\n" +
+                    "    private static void handleSQL(String sql) throws Exception\r\n" +
+                    "    {\r\n" +
+                    "        handleSQL(sql, null);\r\n" +
+                    "    }\r\n" +
+                    "\r\n" +
+                    "    private static void handleSQL(String sql, String queryField) throws Exception\r\n" +
+                    "    {\r\n" +
+                    "        Connection connection = null;\r\n" +
+                    "        Statement statement = null;\r\n" +
+                    "        ResultSet resultSet = null;\r\n" +
+                    "\r\n" +
+                    "        try\r\n" +
+                    "        {\r\n" +
+                    "            String url = \"jdbc:mysql://localhost:3306/\";\r\n" +
+                    "            connection = DriverManager.getConnection(url);\r\n" +
+                    "            System.out.println(\"Database Connected!\");\r\n" +
+                    "\r\n" +
+                    "            statement = connection.createStatement();\r\n" +
+                    "            resultSet = statement.executeQuery(sql);\r\n" +
+                    "            resultSet.beforeFirst();\r\n" +
+                    "            while (resultSet.next())\r\n" +
+                    "            {\r\n" +
+                    "                if (queryField != null)\r\n" +
+                    "                    System.out.println(resultSet.getString(queryField));\r\n" +
+                    "            }\r\n" +
+                    "            System.out.println(\"Valid Operation!\");\r\n" +
+                    "        } catch(Throwable t)\r\n" +
+                    "        {\r\n" +
+                    "            // TODO Handle Exception\r\n" +
+                    "            t.printStackTrace();\r\n" +
+                    "        } finally\r\n" +
+                    "        {\r\n" +
+                    "            if (resultSet != null)\r\n" +
+                    "                resultSet.close();\r\n" +
+                    "            if (statement != null)\r\n" +
+                    "                statement.close();\r\n" +
+                    "            if (connection != null)\r\n" +
+                    "                connection.close();\r\n" +
+                    "            System.out.println(\"Close Properly!\");\r\n" +
+                    "        }\r\n" +
+                    "    }");
+            lineNum+=86;
         }catch (IOException e)
         {
             throw new CodeGenerateException(lineNum);
@@ -205,17 +248,130 @@ public class AnalogInput
         }
     }
 
-    public void generateDaoInitMethod(String sql) throws CodeGenerateException
+    public void generateDaoInitMethod(ArrayList<String> sqls) throws CodeGenerateException
     {
         try
         {
-            writer.write("private static ArrayList<String> sqls;");
-            newLine();
-            writer.write("private static void init()");
+            writer.write("private void init()");
             newLine();
             leftBrace();
-            writer.newLine();
+            newLine();
             addIndent();
+            for(String sql:sqls)
+            {
+                writer.write("sqls.add(\""+sql+"\");");
+                newLine();
+            }
+            revertIndent();
+            newLine();
+            rightBrace();
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    public void generateDaoInsertMethod(String tableName, ArrayList<String> fieldNames) throws CodeGenerateException
+    {
+        try
+        {
+            StringBuilder builder = new StringBuilder();
+            for(String fieldName:fieldNames)
+            {
+                builder.append("String ").append(fieldName).append(", ");
+            }
+            builder.delete(builder.length()-2, builder.length());
+            writer.write("public void insertOne("+builder.toString()+") throws Exception");
+            newLine();
+            leftBrace();
+            newLine();
+            addIndent();
+            StringBuilder anotherBuilder = new StringBuilder();
+            for(String fieldName:fieldNames)
+            {
+                anotherBuilder.append(fieldName).append(", ");
+            }
+            anotherBuilder.delete(anotherBuilder.length()-2, anotherBuilder.length());
+            writer.write("String insertSQL = \"INSERT INTO "+tableName+" ("+anotherBuilder.toString()+") VALUES ");
+            newLine();
+            writer.write("StringBuilder builder = new StringBuilder(insertSQL);");
+            newLine();
+            StringBuilder thirdBuilder = new StringBuilder();
+            // builder.append("("+"\""+ID+"\", "+"\""+Code+"\", "+"\""+Name+"\""+");");
+            for(String fieldName:fieldNames)
+            {
+                thirdBuilder.append("\"\\\"\"+").append(fieldName).append("+\"\\\", \"");
+                thirdBuilder.append("+");
+            }
+            thirdBuilder.delete(thirdBuilder.length()-3, thirdBuilder.length());
+            thirdBuilder.append("\"");
+            System.out.println(thirdBuilder);
+            writer.write("builder.append(\"(\"+"+thirdBuilder.toString()+"+\");\");");
+            newLine();
+            writer.write("handleSQL(builder.toString());");
+            revertIndent();
+            newLine();
+            rightBrace();
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    public void generateDaoSelectMethod(String tableName) throws CodeGenerateException
+    {
+        try
+        {
+            writer.write("public void select(String queryField, String field, String value) throws Exception");
+            newLine();
+            leftBrace();
+            newLine();
+            addIndent();
+            writer.write("String selectSQL = \"SELECT * FROM "+tableName+" WHERE \"+field+\"=\"+value+\";\";");
+            newLine();
+            writer.write("handleSQL(selectSQL, queryField);");
+            revertIndent();
+            newLine();
+            rightBrace();
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    public void generateDaoUpdateMethod(String tableName) throws CodeGenerateException
+    {
+        try
+        {
+            writer.write("public void updateOne(String queryField, String queryValue, String field, String value) throws Exception");
+            newLine();
+            leftBrace();
+            newLine();
+            addIndent();
+            writer.write("String updateSQL = \"UPDATE "+tableName+" SET \"+queryField+\"=\"+queryValue+\"WHERE \"+field+\"=\"+value+\";\";");
+            newLine();
+            writer.write("handleSQL(updateSQL);");
+            revertIndent();
+            newLine();
+            rightBrace();
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
+    public void generateDaoDeleteMethod(String tableName) throws CodeGenerateException
+    {
+        try
+        {
+            writer.write("public void delete(String field, String value) throws Exception");
+            newLine();
+            leftBrace();
+            newLine();
+            addIndent();
+            writer.write("String deleteSQL = \"DELETE FROM "+tableName+" WHERE \"+field+\"=\"+value+\";\";");
+            newLine();
+            writer.write("handleSQL(deleteSQL);");
             revertIndent();
             newLine();
             rightBrace();
