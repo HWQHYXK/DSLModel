@@ -1,6 +1,6 @@
 /*
-* EntityName: ÏúÊÛ¶©µ¥
-* EntityDescription: ÏúÊÛ¶©µ¥Ä£ĞÍ
+* EntityName: é”€å”®è®¢å•
+* EntityDescription: é”€å”®è®¢å•æ¨¡å‹
 * */
 
 package Inspur.Gsp.Order;

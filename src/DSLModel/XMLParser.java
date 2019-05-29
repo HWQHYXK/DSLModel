@@ -2,7 +2,7 @@ package DSLModel;
 
 import org.w3c.dom.*;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.*;
 
 import org.xml.sax.SAXException;
 import type.TypeManager;
@@ -14,17 +14,43 @@ import javax.xml.parsers.ParserConfigurationException;
 public class XMLParser
 {
     TypeManager typeManager = new TypeManager();
-    public Entity buildEntity(String url)
+    HashMap<String, Object> hashMap = new HashMap<>();
+    HashMap<String, Entity> entityHashMap = new HashMap<>();
+    public Entity getRootEntity(String url)
     {
-        Entity entity = new Entity();
         try
         {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document document = dBuilder.parse(url);
 
-            updateEntity(document.getDocumentElement(),entity);
-            return entity;
+            Element root = document.getDocumentElement();
+            NodeList nodes = root.getChildNodes();
+            for(int i = 0;i < nodes.getLength();i++)
+            {
+                Node child0 = nodes.item(i);
+                if (!(child0 instanceof Element)) continue;
+
+                Element x = (Element) child0;
+                if(!x.getNodeName().equals("Entity")) continue;
+
+                Entity entity = new Entity();
+                updateEntity(x,entity);
+
+                String code = entity.properties.get("EntityCode");
+                if(hashMap.containsKey(code))
+                {
+                    Object object = hashMap.get(code);
+                    if(object instanceof Field)
+                        ((Field) object).type = entity;
+                    else if(object instanceof List)
+                        ((List) object).add(entity);
+                }
+
+                entityHashMap.put(code,entity);
+            }
+
+            return getRoot();
         }
         catch (ParserConfigurationException e)
         {
@@ -38,7 +64,34 @@ public class XMLParser
         {
 
         }
+
         return null;
+    }
+
+    private Entity getRoot()
+    {
+        Set<Entity> hasParent = new LinkedHashSet<>();
+        for(Entity entity : entityHashMap.values())
+        {
+            for(Field field : entity.fields)
+            {
+                if(field.type instanceof Entity)
+                    hasParent.add((Entity) field.type);
+                if(field.type instanceof List)
+                    hasParent.add((Entity) ((List) field.type).get(0));
+            }
+        }
+
+        Entity ret = null;
+        for(Entity entity : entityHashMap.values())
+        {
+            if(hasParent.contains(entity)) continue;
+
+            if(ret == null)  ret = entity;
+            else throw new RuntimeException();
+        }
+        if(ret == null) throw new RuntimeException();
+        return ret;
     }
 
     private void updateEntity(Element root,Entity entity)
@@ -187,6 +240,29 @@ public class XMLParser
                 {
                     field.type = new Long("0");
                     break;
+                }
+            }
+        }
+        else if(field.type == null || field.type instanceof List)
+        {
+            for(int i = 0;i < nodes.getLength();i++)
+            {
+                Node child0 = nodes.item(i);
+                if (!(child0 instanceof Element)) continue;
+
+                Element x = (Element) child0;
+                String content = x.getFirstChild().getNodeValue();
+                if(field.type == null)
+                {
+                    if(entityHashMap.containsKey(content))
+                        field.type = entityHashMap.get(content);
+                    else hashMap.put(content,field);
+                }
+                else if (field.type instanceof List)
+                {
+                    if(entityHashMap.containsKey(content))
+                        ((List) field.type).add(entityHashMap.get(content));
+                    else hashMap.put(content,field.type);
                 }
             }
         }

@@ -97,6 +97,7 @@
     </EntityFieldCollection>
   </Entity>
 
+
   <Entity>
     <EntityCode>OrderItem</EntityCode>
     <EntityName>销售订单明细</EntityName>
@@ -146,55 +147,4 @@
       </EntityField>
     </EntityFieldCollection>
   </Entity>
-
-  <Entity>
-    <EntityCode>OrderItem2Item</EntityCode>
-    <EntityName>销售订单明细2明细</EntityName>
-    <EntityDescription>销售订单明细模型</EntityDescription>
-    <EntityNameSpace>Inspur.Gsp.Order</EntityNameSpace>
-    <EntityTableCode>GspOrderItem2</EntityTableCode>
-    <EntityFieldCollection>
-      <EntityField>
-        <FieldCode>ID</FieldCode>
-        <FieldName>内码</FieldName>
-        <FieldType>string</FieldType>
-        <FieldConstraint>
-          <MaxLength>36</MaxLength>
-          <MinLength>36</MinLength>
-          <IsEmpty>false</IsEmpty>
-        </FieldConstraint>
-      </EntityField>
-      <EntityField>
-        <FieldCode>OrderId</FieldCode>
-        <FieldName>所属销售订单内码</FieldName>
-        <FieldType>string</FieldType>
-        <FieldConstraint>
-          <MaxLength>36</MaxLength>
-          <MinLength>36</MinLength>
-          <IsEmpty>false</IsEmpty>
-        </FieldConstraint>
-      </EntityField>
-      <EntityField>
-        <FieldCode>ProductCode</FieldCode>
-        <FieldName>产品编号</FieldName>
-        <FieldType>string</FieldType>
-        <FieldConstraint>
-          <MaxLength>50</MaxLength>
-          <MinLength>1</MinLength>
-          <IsEmpty>false</IsEmpty>
-        </FieldConstraint>
-      </EntityField>
-      <EntityField>
-        <FieldCode>ProductName</FieldCode>
-        <FieldName>产品名称</FieldName>
-        <FieldType>string</FieldType>
-        <FieldConstraint>
-          <MaxLength>50</MaxLength>
-          <MinLength>1</MinLength>
-          <IsEmpty>false</IsEmpty>
-        </FieldConstraint>
-      </EntityField>
-    </EntityFieldCollection>
-  </Entity>
 </EntityCollection>
-
