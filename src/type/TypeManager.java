@@ -58,6 +58,7 @@ public class TypeManager
             }
         }
 
+        //删除<>内容为空 表示本身所给为泛型
         if(s.isEmpty()) return null;
 
         Object ret = null;
