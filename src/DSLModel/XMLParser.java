@@ -17,9 +17,9 @@ public class XMLParser
 {
     TypeManager typeManager = new TypeManager();
     HashMap<String, Object> hashMap = new HashMap<>();
-    public Entity getRootEntiry(String url)
+    public Entity[] getEntities(String url)
     {
-        Entity rootEntity = null;
+        ArrayList<Entity> entities = new ArrayList<>();
         try
         {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -36,20 +36,18 @@ public class XMLParser
                 Element x = (Element) child0;
                 if(!x.getNodeName().equals("Entity")) continue;
 
-                Entity entity = new Entity();
-                updateEntity(x,entity);
+                entities.add(new Entity());
+                updateEntity(x,entities.get(entities.size()-1));
 
-                String code = entity.properties.get("EntityCode");
+                String code = entities.get(entities.size()-1).properties.get("EntityCode");
                 if(hashMap.containsKey(code))
                 {
                     Object object = hashMap.get(code);
                     if(object instanceof Field)
-                        ((Field) object).type = entity;
+                        ((Field) object).type = entities.get(entities.size()-1);
                     else if(object instanceof List)
-                        ((List) object).add(entity);
+                        ((List) object).add(entities.get(entities.size()-1));
                 }
-
-                if(rootEntity == null) rootEntity = entity;
             }
         }
         catch (ParserConfigurationException e)
@@ -64,7 +62,7 @@ public class XMLParser
         {
 
         }
-        return rootEntity;
+        return (Entity[]) entities.toArray();
     }
 
     private void updateEntity(Element root,Entity entity)
