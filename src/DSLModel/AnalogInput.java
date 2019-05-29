@@ -54,6 +54,21 @@ public class AnalogInput
         }
     }
 
+    public void generatePrivateProperties(String property, String value) throws CodeGenerateException
+    {
+        /*
+         * EntityName:
+         * EntityDescription:
+         * */
+        try
+        {
+            writer.write("private static final String "+property+" = \""+value+"\";");
+        }catch (IOException e)
+        {
+            throw new CodeGenerateException(lineNum);
+        }
+    }
+
     public void generatePackage(String namespace) throws CodeGenerateException
     {
         try
@@ -115,11 +130,14 @@ public class AnalogInput
         }
     }
 
-    public void createDaoMainBody() throws CodeGenerateException
+    public void createDaoMainBody(String className) throws CodeGenerateException
     {
         try
         {
-            writer.write("public OrderDao() throws Exception\r\n" +
+            writer.write("private static ArrayList<String> sqls = new ArrayList<>();");
+            newLine();
+            newLine();
+            writer.write("public "+className+"() throws Exception\r\n" +
                     "    {\r\n" +
                     "        init();\r\n" +
                     "        Class.forName(\"com.mysql.jdbc.Driver\");\r\n" +
@@ -292,7 +310,7 @@ public class AnalogInput
                 anotherBuilder.append(fieldName).append(", ");
             }
             anotherBuilder.delete(anotherBuilder.length()-2, anotherBuilder.length());
-            writer.write("String insertSQL = \"INSERT INTO "+tableName+" ("+anotherBuilder.toString()+") VALUES ");
+            writer.write("String insertSQL = \"INSERT INTO "+tableName+" ("+anotherBuilder.toString()+") VALUES \";");
             newLine();
             writer.write("StringBuilder builder = new StringBuilder(insertSQL);");
             newLine();
@@ -305,7 +323,6 @@ public class AnalogInput
             }
             thirdBuilder.delete(thirdBuilder.length()-3, thirdBuilder.length());
             thirdBuilder.append("\"");
-            System.out.println(thirdBuilder);
             writer.write("builder.append(\"(\"+"+thirdBuilder.toString()+"+\");\");");
             newLine();
             writer.write("handleSQL(builder.toString());");

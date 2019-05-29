@@ -1,34 +1,43 @@
 /*
-* EntityName: é”€å”®è®¢å•
-* EntityDescription: é”€å”®è®¢å•æ¨¡å‹
+* EntityName: ÏúÊÛ¶©µ¥
+* EntityDescription: ÏúÊÛ¶©µ¥Ä£ĞÍ
 * */
 
 package Inspur.Gsp.Order;
 
-import java.lang.Integer;
-import java.util.ArrayList;
-import java.util.Date;
 import type.MyString;
 import type.MyDouble;
+import java.util.ArrayList;
+import java.lang.Integer;
+import type.DemoType;
+import java.util.Date;
 import java.lang.Boolean;
 
 public class Order
 {
-    public MyString ID = new MyString(36, 36);// å†…ç 
-    public MyString Code = new MyString(50, 1);// è®¢å•ç¼–å·
-    public MyString Name = new MyString(50, 1);// è®¢å•åç§°
-    public MyDouble Price = new MyDouble(0.0, 8, 2);// å•ä»·
-    public Integer OrderCount;// è®¢å•æ•°ç›®
-    public MyDouble OrderAmount = new MyDouble(0.0, 8, 2);// è®¢å•é‡‘é¢
-    public OrderStatus Status;// è®¢å•çŠ¶æ€
-    public Boolean IsVip;// æ˜¯å¦ä¼šå‘˜
-    public Date Date;// åˆ›å»ºæ—¶é—´
-    public ArrayList<Object> OrderItems = new ArrayList<>();
-
+    private static final String EntityName = "ÏúÊÛ¶©µ¥";
+    private static final String EntityCode = "Order";
+    private static final String EntityDescription = "ÏúÊÛ¶©µ¥Ä£ĞÍ";
+    private static final String EntityNameSpace = "Inspur.Gsp.Order";
+    private static final String EntityTableCode = "GspOrder";
+    
+    public MyString ID = new MyString(36, 36);// ÄÚÂë
+    public MyString Code = new MyString(50, 1);// ¶©µ¥±àºÅ
+    public MyString Name = new MyString(50, 1);// ¶©µ¥Ãû³Æ
+    public MyDouble Price = new MyDouble(0.0, 8, 2);// µ¥¼Û
+    public Integer OrderCount;// ¶©µ¥ÊıÄ¿
+    public MyDouble OrderAmount = new MyDouble(0.0, 8, 2);// ¶©µ¥½ğ¶î
+    public OrderStatus Status;// ¶©µ¥×´Ì¬
+    public Boolean IsVip;// ÊÇ·ñ»áÔ±
+    public Date CreateTime;// ´´½¨Ê±¼ä
+    public DemoType Demo = new DemoType(5, 6);// ×ÖÄ¸
+    public ArrayList<OrderItem> OrderItems = new ArrayList<OrderItem>();// ¶©µ¥Ã÷Ï¸Ïî
+    
     public Order(String ID, String Code, String Name)
     {
         this.ID.setValue(ID);
         this.Code.setValue(Code);
         this.Name.setValue(Name);
+        
     }
 }

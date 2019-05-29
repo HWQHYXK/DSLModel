@@ -3,35 +3,36 @@ package type;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 public class TypeManager
 {
+    private HashMap<Class,Class> baseTypeMap;
     private HashMap<String,Class> typeHashMap;
     public TypeManager()
     {
+        baseTypeMap = new HashMap<>();
+        baseTypeMap.put(Integer.class,int.class);
+        baseTypeMap.put(Short.class,short.class);
+        baseTypeMap.put(Long.class,long.class);
+        baseTypeMap.put(Character.class,char.class);
+        baseTypeMap.put(Double.class,double.class);
+        baseTypeMap.put(Float.class,float.class);
+        baseTypeMap.put(Boolean.class,boolean.class);
+
         typeHashMap = new HashMap<>();
-        try
-        {
-            Class MyString = Class.forName("type.MyString");
-            Class MyDouble = Class.forName("type.MyDouble");
-            Class Boolean = Class.forName("java.lang.Boolean");
-            Class Integer = Class.forName("java.lang.Integer");
-            Class Date = Class.forName("java.util.Date");
-            Class List = Class.forName("java.util.ArrayList");
-
-            typeHashMap.put("string", MyString);
-            typeHashMap.put("double", MyDouble);
-            typeHashMap.put("bool", Boolean);
-            typeHashMap.put("int", Integer);
-            typeHashMap.put("DateTime", Date);
-            typeHashMap.put("List", List);
-        }
-        catch (ClassNotFoundException e)
-        {
-
-        }
+        typeHashMap.put("string", MyString.class);
+        typeHashMap.put("double", MyDouble.class);
+        typeHashMap.put("bool", Boolean.class);
+        typeHashMap.put("int", Integer.class);
+        typeHashMap.put("DateTime", Date.class);
+        typeHashMap.put("List", ArrayList.class);
+    }
+    public void addUserDefinedClassMap(String typeNameInXML, Class clazz)
+    {
+        typeHashMap.put(typeNameInXML, clazz);
     }
     public Object createType(String s)
     {
@@ -65,18 +66,27 @@ public class TypeManager
         Class class0 = typeHashMap.get(s);
         try
         {
-            ret = class0.newInstance();
+            //TODO
+            Constructor constructor = class0.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            ret = constructor.newInstance();
         }
-        catch (InstantiationException | IllegalAccessException e) { }
+        catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) { }
 
         if(ret == null)
         {
             try
             {
-                Constructor constructor0 = class0.getConstructor(new String().getClass());
-                ret = constructor0.newInstance("0");
+                Constructor constructor0 = class0.getConstructor(baseTypeMap.get(class0));
+                if(class0.equals(Boolean.class))
+                    ret = constructor0.newInstance(false);
+                else
+                    ret = constructor0.newInstance('0');
             }
-            catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) { }
+            catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e)
+            {
+                e.printStackTrace();
+            }
         }
 
         return ret;
