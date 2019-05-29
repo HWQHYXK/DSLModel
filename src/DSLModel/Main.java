@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args)
     {
         XMLParser xmlParser = new XMLParser();
-        Entity entity = xmlParser.buildEntity("in/order.xml");
+        Entity entity = xmlParser.getRootEntiry("in/order.xml");
 
         System.out.print("Input Your Root Dir:");
         Scanner scanner = new Scanner(System.in);
