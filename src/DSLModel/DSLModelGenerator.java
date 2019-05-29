@@ -4,17 +4,17 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Main
+public class DSLModelGenerator
 {
     private CodeGenerator codeGenerator;
     private XMLParser xmlParser;
     public static void main(String[] args)
     {
-        Main main = new Main();
-        main.addUserDefinedMAP("DemoType", type.DemoType.class, "VARCHAR(10)");
-        main.work();
+        DSLModelGenerator DSLModelGenerator = new DSLModelGenerator();
+        DSLModelGenerator.addUserDefinedMAP("DemoType", type.DemoType.class, "VARCHAR(10)");
+        DSLModelGenerator.work();
     }
-    public Main()
+    public DSLModelGenerator()
     {
         xmlParser = new XMLParser();
         codeGenerator = new CodeGenerator();
